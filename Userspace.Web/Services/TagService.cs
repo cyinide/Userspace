@@ -12,7 +12,7 @@ namespace Userspace.Web.Services
     public class TagService : ITagService
     {
         public HttpClient _httpClient { get; set; }
-        const string tagsUrl = "https://localhost:44331/api/links";
+        const string tagsUrl = "https://localhost:44331/api/tags";
 
         public TagService(IHttpClientFactory httpClientFactory)
         {
