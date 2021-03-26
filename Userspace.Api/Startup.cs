@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Userspace.Api.Extensions;
 using Userspace.Api.Settings;
 using Userspace.Core;
 using Userspace.Core.Models.Auth;
@@ -34,19 +35,18 @@ namespace Userspace.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
+            var jwtSettings = Configuration.GetSection("Jwt").Get<JwtSettings>();
+
             services.AddControllers();
 
             services.AddDbContext<UserspaceDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("Default"),
             x => x.MigrationsAssembly("Userspace.Data")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
-            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
-
             services.AddIdentity<User, Role>()
             .AddEntityFrameworkStores<UserspaceDbContext>()
             .AddDefaultTokenProviders();
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ILinkService, LinkService>();
@@ -54,8 +54,38 @@ namespace Userspace.Api
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Livehood API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "My Music", Version = "v1" });
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT containing userid claim",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+
+                var security =
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                },
+                                UnresolvedReference = true
+                            },
+                            new List<string>()
+                        }
+                    };
+                options.AddSecurityRequirement(security);
             });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddAuth(jwtSettings);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +108,8 @@ namespace Userspace.Api
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseAuth();
 
             app.UseEndpoints(endpoints =>
             {

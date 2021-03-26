@@ -34,7 +34,7 @@ namespace Userspace.Api.Controllers.Auth
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignIn(SignUpResource userSignUpResource)
+        public async Task<IActionResult> SignUp(SignUpResource userSignUpResource)
         {
             var user = _mapper.Map<SignUpResource, User>(userSignUpResource);
 
