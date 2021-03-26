@@ -44,6 +44,8 @@ namespace Userspace.Api
             options.UseSqlServer(Configuration.GetConnectionString("Default"),
             x => x.MigrationsAssembly("Userspace.Data")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
+            services.AddCustomCors("AllowAllOrigins");
+
             services.AddIdentity<User, Role>()
             .AddEntityFrameworkStores<UserspaceDbContext>()
             .AddDefaultTokenProviders();
@@ -106,6 +108,8 @@ namespace Userspace.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("AllowAllOrigins");
 
             app.UseAuthorization();
 

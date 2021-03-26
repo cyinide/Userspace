@@ -14,6 +14,7 @@ using Userspace.Core.Services;
 namespace Userspace.Api.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize]
     [ApiController]
     public class LinksController : ControllerBase
     {

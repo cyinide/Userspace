@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Userspace.Web.Models.Link>
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<h1>Userspace</h1>
+
+<p>
+    <a>Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Create", "Index", new
+           {
+               controller = "Home",
+               action = "Index"
+           }) |
+                @Html.ActionLink("Edit", "Index", new
+           {
+               controller = "Home",
+               action = "Index"
+           }) |
+                @Html.ActionLink("Delete", "Index", new
+             {
+                 controller = "Home",
+                 action = "Index"
+             }) |
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
