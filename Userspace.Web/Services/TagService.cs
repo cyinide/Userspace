@@ -12,6 +12,7 @@ namespace Userspace.Web.Services
     public class TagService : ITagService
     {
         public HttpClient _httpClient { get; set; }
+        const string tagsUrl = "https://localhost:44331/api/links";
 
         public TagService(IHttpClientFactory httpClientFactory)
         {
@@ -20,13 +21,20 @@ namespace Userspace.Web.Services
 
         public async Task<IEnumerable<Tag>> GetTags()
         {
-            List<Tag> tags = new List<Tag>();
+            try
+            {
+                List<Tag> tags = new List<Tag>();
 
-            var response = await _httpClient.GetAsync("https://localhost:44331/api/tags"); 
-            string apiResponse = await response.Content.ReadAsStringAsync();
+                var response = await _httpClient.GetAsync(tagsUrl);
+                string apiResponse = await response.Content.ReadAsStringAsync();
 
-            tags = JsonConvert.DeserializeObject<List<Tag>>(apiResponse);
-            return tags;
+                tags = JsonConvert.DeserializeObject<List<Tag>>(apiResponse);
+                return tags;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
 
         public Task<Tag> GetTagById(int id)

@@ -12,6 +12,7 @@ namespace Userspace.Web.Services
     public class LinkService : ILinkService
     {
         public HttpClient _httpClient { get; set; }
+        const string linksUrl = "https://localhost:44331/api/links";
 
         public LinkService(IHttpClientFactory httpClientFactory)
         {
@@ -19,13 +20,20 @@ namespace Userspace.Web.Services
         }
         public async Task<IEnumerable<Link>> GetLinks()
         {
-            List<Link> links = new List<Link>();
+            try
+            {
+                List<Link> links = new List<Link>();
 
-            var response = await _httpClient.GetAsync("https://localhost:44331/api/links");
-            string apiResponse = await response.Content.ReadAsStringAsync();
+                var response = await _httpClient.GetAsync(linksUrl);
+                string apiResponse = await response.Content.ReadAsStringAsync();
 
-            links = JsonConvert.DeserializeObject<List<Link>>(apiResponse);
-            return links;
+                links = JsonConvert.DeserializeObject<List<Link>>(apiResponse);
+                return links;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
         }
         public Task<Link> GetLinkById(int id)
         {
