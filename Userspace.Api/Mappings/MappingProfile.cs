@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Userspace.Api.Resources;
+using Userspace.Api.Resources.Auth;
 using Userspace.Core.Models;
+using Userspace.Core.Models.Auth;
 
 namespace Userspace.Api.Mappings
 {
@@ -12,6 +14,9 @@ namespace Userspace.Api.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<SignUpResource, User>();
+            CreateMap<SignInResource, User>();
+
             CreateMap<Link, LinkResource>();
             CreateMap<Tag, TagResource>();
             CreateMap<Link, SaveLinkResource>();

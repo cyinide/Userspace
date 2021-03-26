@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Userspace.Api.Settings;
 using Userspace.Core;
+using Userspace.Core.Models.Auth;
 using Userspace.Core.Services;
 using Userspace.Data;
 using Userspace.Services.Services;
@@ -36,6 +39,12 @@ namespace Userspace.Api
             services.AddDbContext<UserspaceDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("Default"),
             x => x.MigrationsAssembly("Userspace.Data")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
+
+            services.AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<UserspaceDbContext>()
+            .AddDefaultTokenProviders();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

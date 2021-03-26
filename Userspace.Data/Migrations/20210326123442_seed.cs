@@ -7,7 +7,7 @@ namespace Userspace.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder
-               .Sql("INSERT INTO Links (Name) Values ('www.example.com/')");
+             .Sql("INSERT INTO Links (Name) Values ('www.example.com/')");
             migrationBuilder
                 .Sql("INSERT INTO Links (Name) Values ('http://www.example.com/')");
             migrationBuilder
@@ -48,13 +48,12 @@ namespace Userspace.Data.Migrations
              .Sql("INSERT INTO LinkTags (LinkId, TagId) Values ((SELECT Id FROM Links WHERE Name = 'http://www.example.com/'), (SELECT Id FROM Tags WHERE Name = 'foo4'))");
             migrationBuilder
                 .Sql("INSERT INTO LinkTags (LinkId, TagId) Values ((SELECT Id FROM Links WHERE Name = 'www.example.com/'), (SELECT Id FROM Tags WHERE Name = 'greet'))");
-
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder
-               .Sql("DELETE FROM Links");
+              .Sql("DELETE FROM Links");
             migrationBuilder
                .Sql("DELETE FROM Tags");
             migrationBuilder
