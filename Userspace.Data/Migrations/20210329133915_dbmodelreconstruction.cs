@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Userspace.Data.Migrations
 {
-    public partial class AddIdentity : Migration
+    public partial class dbmodelreconstruction : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -60,19 +60,6 @@ namespace Userspace.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Links", x => x.ID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -182,26 +169,46 @@ namespace Userspace.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LinkTags",
+                name: "Tags",
                 columns: table => new
                 {
-                    LinkId = table.Column<int>(nullable: false),
-                    TagId = table.Column<int>(nullable: false)
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: false),
+                    LinkId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LinkTags", x => new { x.LinkId, x.TagId });
+                    table.PrimaryKey("PK_Tags", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_LinkTags_Links_LinkId",
+                        name: "FK_Tags_Links_LinkId",
+                        column: x => x.LinkId,
+                        principalTable: "Links",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserLinks",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(nullable: false),
+                    LinkId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLinks", x => new { x.LinkId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_UserLinks_Links_LinkId",
                         column: x => x.LinkId,
                         principalTable: "Links",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_LinkTags_Tags_TagId",
-                        column: x => x.TagId,
-                        principalTable: "Tags",
-                        principalColumn: "ID",
+                        name: "FK_UserLinks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -245,9 +252,14 @@ namespace Userspace.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_LinkTags_TagId",
-                table: "LinkTags",
-                column: "TagId");
+                name: "IX_Tags_LinkId",
+                table: "Tags",
+                column: "LinkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLinks_UserId",
+                table: "UserLinks",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -268,19 +280,19 @@ namespace Userspace.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "LinkTags");
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "UserLinks");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Links");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "AspNetUsers");
         }
     }
 }

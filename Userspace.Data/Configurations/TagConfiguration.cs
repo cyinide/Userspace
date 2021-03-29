@@ -17,6 +17,11 @@ namespace Userspace.Data.Configurations
             builder
                 .Property(m => m.Name)
                 .IsRequired();
+
+            builder
+              .HasOne(m => m.Link)
+              .WithMany(a => a.Tags)
+              .HasForeignKey(m => m.LinkId);
         }
     }
 }

@@ -7,12 +7,12 @@ using Userspace.Core.Models;
 
 namespace Userspace.Data.Configurations
 {
-    public class LinkTagConfiguration : IEntityTypeConfiguration<LinkTag>
+    public class UserLinkConfiguration : IEntityTypeConfiguration<UserLink>
     {
-        public void Configure(EntityTypeBuilder<LinkTag> builder)
+        public void Configure(EntityTypeBuilder<UserLink> builder)
         {
             builder
-               .HasKey(x => new { x.LinkId, x.TagId });
+               .HasKey(x => new { x.LinkId, x.UserId });
         }
     }
 }

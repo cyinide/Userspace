@@ -8,10 +8,10 @@ namespace Userspace.Core.Models
     {
         public Link()
         {
-            LinkTags = new HashSet<LinkTag>();
+            Tags = new HashSet<Tag>();
         }
         public int ID { get; set; }
         public string Name { get; set; }
-        public ICollection<LinkTag> LinkTags { get; set; }
+        public virtual ICollection<Tag> Tags { get; set; }
     }
 }

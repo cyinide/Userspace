@@ -239,21 +239,6 @@ namespace Userspace.Data.Migrations
                     b.ToTable("Links");
                 });
 
-            modelBuilder.Entity("Userspace.Core.Models.LinkTag", b =>
-                {
-                    b.Property<int>("LinkId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.HasKey("LinkId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("LinkTags");
-                });
-
             modelBuilder.Entity("Userspace.Core.Models.Tag", b =>
                 {
                     b.Property<int>("ID")
@@ -261,13 +246,34 @@ namespace Userspace.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("LinkId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
+                    b.HasIndex("LinkId");
+
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("Userspace.Core.Models.UserLink", b =>
+                {
+                    b.Property<int>("LinkId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LinkId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLinks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -321,17 +327,26 @@ namespace Userspace.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Userspace.Core.Models.LinkTag", b =>
+            modelBuilder.Entity("Userspace.Core.Models.Tag", b =>
                 {
                     b.HasOne("Userspace.Core.Models.Link", "Link")
-                        .WithMany("LinkTags")
+                        .WithMany("Tags")
+                        .HasForeignKey("LinkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Userspace.Core.Models.UserLink", b =>
+                {
+                    b.HasOne("Userspace.Core.Models.Link", "Link")
+                        .WithMany()
                         .HasForeignKey("LinkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Userspace.Core.Models.Tag", "Tag")
-                        .WithMany("LinkTags")
-                        .HasForeignKey("TagId")
+                    b.HasOne("Userspace.Core.Models.Auth.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

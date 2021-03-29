@@ -56,7 +56,7 @@ namespace Userspace.Api
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "My Music", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Userspace", Version = "v1" });
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -97,7 +97,7 @@ namespace Userspace.Api
             app.UseSwaggerUI(c =>
             {
                 c.RoutePrefix = "";
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Livehood V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Userspace V1");
             });
 
             if (env.IsDevelopment())

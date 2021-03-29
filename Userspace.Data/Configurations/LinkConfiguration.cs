@@ -17,6 +17,11 @@ namespace Userspace.Data.Configurations
             builder
                 .Property(m => m.Name)
                 .IsRequired();
+
+            builder
+            .HasMany(c => c.Tags)
+            .WithOne(e => e.Link)
+            .IsRequired();
         }
     }
 }
