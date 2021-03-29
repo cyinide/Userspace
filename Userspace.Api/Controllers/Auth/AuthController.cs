@@ -50,7 +50,7 @@ namespace Userspace.Api.Controllers.Auth
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn(SignInResource userSignInResource)
         {
-            var user = _userManager.Users.SingleOrDefault(u => u.UserName == userSignInResource.Username);
+            var user = _userManager.Users.SingleOrDefault(u => u.Email == userSignInResource.Email);
             if (user is null)
             {
                 return NotFound("User not found");

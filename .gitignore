@@ -338,3 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/Userspace.Web/Models/Auth/ApplicationUser.cs

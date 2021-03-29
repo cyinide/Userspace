@@ -8,8 +8,8 @@ namespace Userspace.Web.Interfaces
 {
     public interface ITagService
     {
-        Task<IEnumerable<Tag>> GetTags();
-        Task<Tag> GetTagById(int id);
-        Task<Tag> CreateTag(Tag link);
+        Task<IEnumerable<TagViewModel>> GetTags();
+        Task<TagViewModel> GetTagById(int id);
+        Task<TagViewModel> CreateTag(TagViewModel link);
     }
 }

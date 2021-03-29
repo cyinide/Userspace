@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Userspace.Web.Interfaces;
@@ -19,12 +22,11 @@ namespace Userspace.Web.Controllers
 
         public HomeController(ILinkService linkService, ITagService tagService)
         {
-
             _linkService = linkService;
             _tagService = tagService;
         }
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index(LoginViewModel model)
+        {          
             var links = await _linkService.GetLinks();
             return View(links);
         }
@@ -33,7 +35,7 @@ namespace Userspace.Web.Controllers
             var tags = await _tagService.GetTags();
             return View(tags);
         }
-        public ActionResult Login()
+        public async Task<ActionResult> Login()
         {
             return View();
         }

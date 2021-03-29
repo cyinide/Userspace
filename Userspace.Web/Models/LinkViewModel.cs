@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Userspace.Web.Models
 {
-    public class Link
+    public class LinkViewModel
     {
         public int ID { get; set; }
         public string Name { get; set; }

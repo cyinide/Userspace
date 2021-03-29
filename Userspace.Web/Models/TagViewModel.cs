@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Userspace.Web.Models
 {
-    public class Tag
+    public class TagViewModel
     {
         public int ID { get; set; }
         public string Name { get; set; }

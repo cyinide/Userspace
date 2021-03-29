@@ -19,16 +19,16 @@ namespace Userspace.Web.Services
             _httpClient = httpClientFactory.CreateClient();
         }
 
-        public async Task<IEnumerable<Tag>> GetTags()
+        public async Task<IEnumerable<TagViewModel>> GetTags()
         {
             try
             {
-                List<Tag> tags = new List<Tag>();
+                List<TagViewModel> tags = new List<TagViewModel>();
 
                 var response = await _httpClient.GetAsync(tagsUrl);
                 string apiResponse = await response.Content.ReadAsStringAsync();
 
-                tags = JsonConvert.DeserializeObject<List<Tag>>(apiResponse);
+                tags = JsonConvert.DeserializeObject<List<TagViewModel>>(apiResponse);
                 return tags;
             }
             catch (Exception)
@@ -37,12 +37,12 @@ namespace Userspace.Web.Services
             }
         }
 
-        public Task<Tag> GetTagById(int id)
+        public Task<TagViewModel> GetTagById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Tag> CreateTag(Tag link)
+        public Task<TagViewModel> CreateTag(TagViewModel link)
         {
             throw new NotImplementedException();
         }

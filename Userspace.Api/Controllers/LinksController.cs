@@ -62,5 +62,23 @@ namespace Userspace.Api.Controllers
 
             return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
         }
+        // POST: api/linkwithtags
+        //[HttpPost("")]
+        //public async Task<ActionResult<SaveLinkResource>> CreateLinkWithTags([FromBody] SaveLinkResource saveLinkResource)
+        //{
+        //    //var validator = new SaveLinkResourceValidator();
+        //    //var validationResult = await validator.ValidateAsync(saveLinkResource);
+
+        //    //  if (!validationResult.IsValid)
+        //    //   return BadRequest(validationResult.Errors); 
+
+        //    var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
+        //    var newLink = await _linkService.CreateLink(linkToCreate);
+
+        //    var link = await _linkService.GetLinkById(newLink.ID);
+        //    var linkResource = _mapper.Map<Link, LinkResource>(newLink);
+
+        //    return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
+        //}
     }
 }

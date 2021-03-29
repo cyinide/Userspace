@@ -18,16 +18,16 @@ namespace Userspace.Web.Services
         {
             _httpClient = httpClientFactory.CreateClient();
         }
-        public async Task<IEnumerable<Link>> GetLinks()
+        public async Task<IEnumerable<LinkViewModel>> GetLinks()
         {
             try
             {
-                List<Link> links = new List<Link>();
+                List<LinkViewModel> links = new List<LinkViewModel>();
 
                 var response = await _httpClient.GetAsync(linksUrl);
                 string apiResponse = await response.Content.ReadAsStringAsync();
 
-                links = JsonConvert.DeserializeObject<List<Link>>(apiResponse);
+                links = JsonConvert.DeserializeObject<List<LinkViewModel>>(apiResponse);
                 return links;
             }
             catch (Exception)
@@ -35,11 +35,11 @@ namespace Userspace.Web.Services
                 throw new Exception();
             }
         }
-        public Task<Link> GetLinkById(int id)
+        public Task<LinkViewModel> GetLinkById(int id)
         {
             throw new NotImplementedException();
         }
-        public Task<Link> CreateLink(Link link)
+        public Task<LinkViewModel> CreateLink(LinkViewModel link)
         {
             throw new NotImplementedException();
         }
