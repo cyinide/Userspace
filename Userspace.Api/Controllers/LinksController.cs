@@ -20,7 +20,6 @@ namespace Userspace.Api.Controllers
     {
         private readonly ILinkService _linkService;
         private readonly IMapper _mapper;
-
         public LinksController(ILinkService linkService, IMapper mapper)
         {
             this._mapper = mapper;
@@ -62,23 +61,23 @@ namespace Userspace.Api.Controllers
 
             return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
         }
-        // POST: api/linkwithtags
-        //[HttpPost("")]
-        //public async Task<ActionResult<SaveLinkResource>> CreateLinkWithTags([FromBody] SaveLinkResource saveLinkResource)
-        //{
-        //    //var validator = new SaveLinkResourceValidator();
-        //    //var validationResult = await validator.ValidateAsync(saveLinkResource);
+        // GET: api/links/withtags
+        [HttpGet("withtags")]
+        public async Task<ActionResult<IEnumerable<LinkResource>>> GetAllWithTags()
+        {
+            var links = await _linkService.GetAllWithTagsAsync();
+            var linkResources = _mapper.Map<IEnumerable<Link>, IEnumerable<LinkResource>>(links);
 
-        //    //  if (!validationResult.IsValid)
-        //    //   return BadRequest(validationResult.Errors); 
+            return Ok(linkResources);
+        }
+        // GET: api/links/withtags/id
+        [HttpGet("withtagsbyid/{id}")]
+        public async Task<ActionResult<LinkResource>> GetWithTagsById(int id)
+        {
+            var link = await _linkService.GetWithTagsByIdAsync(id);
+            var linkResource = _mapper.Map<Link, LinkResource>(link);
 
-        //    var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
-        //    var newLink = await _linkService.CreateLink(linkToCreate);
-
-        //    var link = await _linkService.GetLinkById(newLink.ID);
-        //    var linkResource = _mapper.Map<Link, LinkResource>(newLink);
-
-        //    return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
-        //}
+            return Ok(linkResource);
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace Userspace.Core.Services
         Task<IEnumerable<Link>> GetAll();
         Task<Link> GetLinkById(int id);
         Task<Link> CreateLink(Link newLink);
-
+        Task<IEnumerable<Link>> GetAllWithTagsAsync();
+        Task<Link> GetWithTagsByIdAsync(int id);
     }
 }

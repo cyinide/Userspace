@@ -10,7 +10,6 @@ namespace Userspace.Data.Repositories
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly DbContext Context;
-
         public Repository(DbContext context)
         {
             this.Context = context;
@@ -27,7 +26,6 @@ namespace Userspace.Data.Repositories
         {
             await Context.Set<TEntity>().AddAsync(entity);
         }
-
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
             await Context.Set<TEntity>().AddRangeAsync(entities);

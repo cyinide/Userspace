@@ -24,7 +24,6 @@ namespace Userspace.Api.Controllers.Auth
         private readonly RoleManager<Role> _roleManager;
         private readonly IMapper _mapper;
         private readonly JwtSettings _jwtSettings;
-
         public AuthController(IMapper mapper, UserManager<User> userManager, RoleManager<Role> roleManager, IOptionsSnapshot<JwtSettings> jwtSettings)
         {
             _mapper = mapper;
@@ -32,19 +31,15 @@ namespace Userspace.Api.Controllers.Auth
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
         }
-
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(SignUpResource userSignUpResource)
         {
             var user = _mapper.Map<SignUpResource, User>(userSignUpResource);
-
             var userCreateResult = await _userManager.CreateAsync(user, userSignUpResource.Password);
-
             if (userCreateResult.Succeeded)
             {
                 return Created(string.Empty, string.Empty);
             }
-
             return Problem(userCreateResult.Errors.First().Description, null, 500);
         }
         [HttpPost("signin")]
@@ -55,18 +50,14 @@ namespace Userspace.Api.Controllers.Auth
             {
                 return NotFound("User not found");
             }
-
             var userSigninResult = await _userManager.CheckPasswordAsync(user, userSignInResource.Password);
-
             if (userSigninResult)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 return Ok(GenerateJwt(user, roles));
             }
-
             return BadRequest("Email or password incorrect.");
         }
-
         private string GenerateJwt(User user, IList<string> roles)
         {
             var claims = new List<Claim>
@@ -91,7 +82,6 @@ namespace Userspace.Api.Controllers.Auth
                 expires: expires,
                 signingCredentials: creds
             );
-
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

@@ -18,7 +18,6 @@ namespace Userspace.Api.Controllers
     {
         private readonly ITagService _tagService;
         private readonly IMapper _mapper;
-
         public TagsController(ITagService tagService, IMapper mapper)
         {
             this._mapper = mapper;
@@ -59,6 +58,15 @@ namespace Userspace.Api.Controllers
             var tagResource = _mapper.Map<Tag, TagResource>(newTag);
 
             return CreatedAtRoute(nameof(GetTagById), new { Id = tagResource.ID }, tagResource);
+        }
+        // GET: api/tags/bylinkid
+        [HttpGet("bylinkid/{linkId}")]
+        public async Task<ActionResult<IEnumerable<LinkResource>>> GetTagsByLinkId(int linkId)
+        {
+            var tags = await _tagService.GetTagsByLinkId(linkId);
+            var tagResources = _mapper.Map<IEnumerable<Tag>, IEnumerable<TagResource>>(tags);
+
+            return Ok(tagResources);
         }
     }
 }

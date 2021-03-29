@@ -18,7 +18,7 @@ namespace Userspace.Services.Services
         public async Task<IEnumerable<Tag>> GetAll()
         {
             return await _unitOfWork.Tags
-                     .GetAllAsync();
+                .GetAllAsync();
         }
         public async Task<Tag> GetTagById(int id)
         {
@@ -30,6 +30,11 @@ namespace Userspace.Services.Services
             await _unitOfWork.Tags.AddAsync(newTag);
             await _unitOfWork.CommitAsync();
             return newTag;
+        }
+        public async Task<IEnumerable<Tag>> GetTagsByLinkId(int id)
+        {
+            return await _unitOfWork.Tags
+                .GetTagsByLinkIdAsync(id);
         }
     }
 }

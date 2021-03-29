@@ -8,7 +8,7 @@ namespace Userspace.Core
 {
     public interface IUnitOfWork : IDisposable
     {
-        ILinkRepistory Links { get; }
+        ILinkRepository Links { get; }
         ITagRepository Tags { get; }
         Task<int> CommitAsync();
     }

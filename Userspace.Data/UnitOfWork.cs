@@ -17,7 +17,7 @@ namespace Userspace.Data
         {
             this._context = context;
         }
-        public ILinkRepistory Links => _linkRepository = _linkRepository ?? new LinkRepository(_context);
+        public ILinkRepository Links => _linkRepository = _linkRepository ?? new LinkRepository(_context);
         public ITagRepository Tags => _tagRepository = _tagRepository ?? new TagRepository(_context);
 
         public async Task<int> CommitAsync()

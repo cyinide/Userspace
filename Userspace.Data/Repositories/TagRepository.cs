@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Userspace.Core.Models;
@@ -21,7 +22,15 @@ namespace Userspace.Data.Repositories
         public async Task<Tag> GetTagByIdAsync(int id)
         {
             return await UserspaceDbContext.Tags
+                .Where(x => x.ID == id)
                     .SingleOrDefaultAsync();
+        }
+        public async Task<IEnumerable<Tag>> GetTagsByLinkIdAsync(int linkId)
+        {
+            return await UserspaceDbContext.Tags
+                .Include(x => x.Link)
+                .Where(x => x.LinkId == linkId)
+                .ToListAsync();
         }
         private UserspaceDbContext UserspaceDbContext
         {

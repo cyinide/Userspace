@@ -18,7 +18,7 @@ namespace Userspace.Services.Services
         public async Task<IEnumerable<Link>> GetAll()
         {
             return await _unitOfWork.Links
-                   .GetAllAsync();
+                .GetAllAsync();
         }
         public async Task<Link> GetLinkById(int id)
         {
@@ -30,6 +30,16 @@ namespace Userspace.Services.Services
             await _unitOfWork.Links.AddAsync(newLink);
             await _unitOfWork.CommitAsync();
             return newLink;
+        }
+        public async Task<IEnumerable<Link>> GetAllWithTagsAsync()
+        {
+            return await _unitOfWork.Links
+                .GetAllWithTagsAsync();
+        }
+        public async Task<Link> GetWithTagsByIdAsync(int id)
+        {
+            return await _unitOfWork.Links
+                .GetWithTagsByIdAsync(id);
         }
     }
 }
