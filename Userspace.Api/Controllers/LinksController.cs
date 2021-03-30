@@ -91,7 +91,7 @@ namespace Userspace.Api.Controllers
 
             return Ok(linkResource);
         }
-        // GET: api/links/withtags
+        // GET: api/links/withtagsbyuserid/id
         [HttpGet("withtagsbyuserid/{userId}")]
         public async Task<ActionResult<IEnumerable<UserLinkResource>>> GetAllWithTagsByUserId(string userId)
         {

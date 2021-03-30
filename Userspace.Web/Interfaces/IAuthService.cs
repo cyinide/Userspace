@@ -8,7 +8,7 @@ namespace Userspace.Web.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> Login(LoginViewModel login);
-        Task<bool> Register(RegisterViewModel register);
+        Task<bool> Login(LoginViewModel model);
+        Task<bool> Register(RegisterViewModel model);
     }
 }

@@ -27,6 +27,7 @@ namespace Userspace.Web
         {
             services.AddTransient<ILinkService, LinkService>();
             services.AddTransient<ITagService, TagService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddHttpClient<LinkService>();
             services.AddHttpClient<TagService>();
 

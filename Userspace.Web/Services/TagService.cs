@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
@@ -17,8 +18,9 @@ namespace Userspace.Web.Services
         public TagService(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient();
+            _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
         }
-
         public async Task<IEnumerable<TagViewModel>> GetTags()
         {
             try
@@ -36,12 +38,10 @@ namespace Userspace.Web.Services
                 throw new Exception();
             }
         }
-
         public Task<TagViewModel> GetTagById(int id)
         {
             throw new NotImplementedException();
         }
-
         public Task<TagViewModel> CreateTag(TagViewModel link)
         {
             throw new NotImplementedException();

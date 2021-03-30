@@ -19,29 +19,71 @@ namespace Userspace.Web.Controllers
     {
         public ILinkService _linkService { get; private set; }
         public ITagService _tagService { get; private set; }
+        public IAuthService _authService { get; private set; }
 
-        public HomeController(ILinkService linkService, ITagService tagService)
+        public HomeController(IAuthService authService, ILinkService linkService, ITagService tagService)
         {
             _linkService = linkService;
             _tagService = tagService;
+            _authService = authService;
         }
-        public async Task<IActionResult> Index(LoginViewModel model)
-        {          
-            var links = await _linkService.GetLinks();
+        public async Task<IActionResult> Index()
+        {
+            var x = User.Identity.Name;
+            var y = User.Identity.IsAuthenticated;
+
+            TempData["Message"] = "Hello ," + Settings.CurrentUserName;
+            var links = await _linkService.GetLinks(Settings.CurrentUserId);
+
             return View(links);
+
         }
         public async Task<IActionResult> Tags()
         {
+            TempData["Message"] = "Hello ," + Settings.CurrentUserName;
             var tags = await _tagService.GetTags();
             return View(tags);
         }
-        public async Task<ActionResult> Login()
+        [HttpGet]
+        public ActionResult Login()
         {
             return View();
         }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+                ViewBag.Message = string.Format("Credentials are in incorrect format.");
+            var result = await _authService.Login(model);
+            if (!result)
+            {
+                ViewBag.Message = string.Format("Incorrect username or password.");
+                return RedirectToAction("Login");
+            }
+            ViewBag.Message = string.Format("User signed up.");
+
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
         public ActionResult Register()
         {
             return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                ViewBag.Message = string.Format("Credentials are in incorrect format.");
+            var result = await _authService.Register(model);
+            if (!result)
+            {
+                ViewBag.Message = string.Format("Try again.");
+                return RedirectToAction("Register");
+            }
+            ViewBag.Message = string.Format("User signed in.");
+            return RedirectToAction("Login");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

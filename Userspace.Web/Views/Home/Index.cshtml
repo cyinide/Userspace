@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ID)
+                @Html.DisplayNameFor(model => model.Link.ID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Link.Name)
             </th>
             <th></th>
         </tr>
@@ -24,31 +24,31 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.ActionLink("Create", "Index", new
-           {
-               controller = "Home",
-               action = "Index"
-           }) |
-                @Html.ActionLink("Edit", "Index", new
-           {
-               controller = "Home",
-               action = "Index"
-           }) |
-                @Html.ActionLink("Delete", "Index", new
-             {
-                 controller = "Home",
-                 action = "Index"
-             })
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Link.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Link.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Create", "Index", new
+               {
+                   controller = "Home",
+                   action = "Index"
+               }) |
+                    @Html.ActionLink("Edit", "Index", new
+               {
+                   controller = "Home",
+                   action = "Index"
+               }) |
+                    @Html.ActionLink("Delete", "Index", new
+                 {
+                     controller = "Home",
+                     action = "Index"
+                 })
+                </td>
+            </tr>
         }
     </tbody>
 </table>

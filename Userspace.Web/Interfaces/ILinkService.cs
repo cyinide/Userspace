@@ -8,7 +8,7 @@ namespace Userspace.Web.Interfaces
 {
     public interface ILinkService
     {
-         Task<IEnumerable<LinkViewModel>> GetLinks();
+         Task<IEnumerable<LinkViewModel>> GetLinks(string userId);
          Task<LinkViewModel> GetLinkById(int id);
          Task<LinkViewModel> CreateLink(LinkViewModel link);
     }
