@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Userspace.Api.Resources;
+using Userspace.Api.Validators;
 using Userspace.Core.Models;
 using Userspace.Core.Services;
 
@@ -47,11 +48,11 @@ namespace Userspace.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult<SaveLinkResource>> CreateLink([FromBody] SaveLinkResource saveLinkResource)
         {
-            //var validator = new SaveLinkResourceValidator();
-            //var validationResult = await validator.ValidateAsync(saveLinkResource);
+            var validator = new SaveLinkResourceValidator();
+            var validationResult = await validator.ValidateAsync(saveLinkResource);
 
-            //  if (!validationResult.IsValid)
-            //   return BadRequest(validationResult.Errors); 
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
             var newLink = await _linkService.CreateLink(linkToCreate);

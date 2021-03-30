@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Userspace.Api.Resources;
+using Userspace.Api.Validators;
 using Userspace.Core.Models;
 using Userspace.Core.Services;
 
@@ -45,11 +46,11 @@ namespace Userspace.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult<SaveTagResource>> CreateTag([FromBody] SaveTagResource saveTagResource)
         {
-            //var validator = new SaveTagResourceValidator();
-            //var validationResult = await validator.ValidateAsync(saveTagResource);
+            var validator = new SaveTagResourceValidator();
+            var validationResult = await validator.ValidateAsync(saveTagResource);
 
-            //  if (!validationResult.IsValid)
-            //   return BadRequest(validationResult.Errors); 
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);
 
             var tagToCreate = _mapper.Map<SaveTagResource, Tag>(saveTagResource);
             var newTag = await _tagService.CreateTag(tagToCreate);
