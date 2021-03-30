@@ -17,8 +17,12 @@ namespace Userspace.Api.Mappings
             CreateMap<SignUpResource, User>();
             CreateMap<SignInResource, User>();
 
+            CreateMap<UserLink, UserResource>();
+            CreateMap<UserResource, UserLink>();
+
             CreateMap<Link, LinkResource>()
-                .ForMember(x => x.TagResources, opt => opt.MapFrom(y => y.Tags));
+                .ForMember(x => x.TagResources, opt => opt.MapFrom(y => y.Tags))
+                .ForMember(x => x.UserResources, opt => opt.MapFrom(y => y.UserLinks));
             CreateMap<Tag, TagResource>();
             CreateMap<Link, SaveLinkResource>();
             CreateMap<Tag, SaveTagResource>();

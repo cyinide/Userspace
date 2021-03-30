@@ -10,8 +10,8 @@ using Userspace.Data;
 namespace Userspace.Data.Migrations
 {
     [DbContext(typeof(UserspaceDbContext))]
-    [Migration("20210329133915_dbmodelreconstruction")]
-    partial class dbmodelreconstruction
+    [Migration("20210330075948_seed")]
+    partial class seed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -341,13 +341,13 @@ namespace Userspace.Data.Migrations
             modelBuilder.Entity("Userspace.Core.Models.UserLink", b =>
                 {
                     b.HasOne("Userspace.Core.Models.Link", "Link")
-                        .WithMany()
+                        .WithMany("UserLinks")
                         .HasForeignKey("LinkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Userspace.Core.Models.Auth.User", "User")
-                        .WithMany()
+                        .WithMany("UserLinks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

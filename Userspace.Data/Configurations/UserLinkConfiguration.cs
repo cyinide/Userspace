@@ -13,6 +13,16 @@ namespace Userspace.Data.Configurations
         {
             builder
                .HasKey(x => new { x.LinkId, x.UserId });
+
+            builder
+                 .HasOne(x => x.Link)
+                 .WithMany(x => x.UserLinks)
+                 .HasForeignKey(x => x.LinkId);
+
+            builder
+                .HasOne(x => x.User)
+                .WithMany(x => x.UserLinks)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Userspace.Data.Repositories
         public async Task<IEnumerable<Link>> GetLinksAsync()
         {
             return await UserspaceDbContext.Links
+                .Include(x=>x.UserLinks)
                 .ToListAsync();
         }
         public async Task<Link> GetLinkByIdAsync(int linkId)

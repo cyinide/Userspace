@@ -18,7 +18,7 @@ namespace Userspace.Services.Services
         public async Task<IEnumerable<Link>> GetAll()
         {
             return await _unitOfWork.Links
-                .GetAllAsync();
+                .GetLinksAsync();
         }
         public async Task<Link> GetLinkById(int id)
         {

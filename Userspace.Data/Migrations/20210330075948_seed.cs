@@ -59,14 +59,17 @@ namespace Userspace.Data.Migrations
             migrationBuilder
                 .Sql("INSERT INTO UserLinks (LinkId, UserId) Values ((SELECT Id FROM Links WHERE Name = 'http://www.example.com/?hello=world&foo1=bar2'), (SELECT Id FROM AspNetUsers WHERE Id = 'BCF35950-66FB-4EAC-BE9E-08D8F2E0DD6C'))");
         }
+
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder
+              .Sql("DELETE FROM AspNetUsers");
             migrationBuilder
               .Sql("DELETE FROM Links");
             migrationBuilder
                .Sql("DELETE FROM Tags");
             migrationBuilder
-               .Sql("DELETE FROM UserTags");
+               .Sql("DELETE FROM UserLinks");
         }
     }
 }

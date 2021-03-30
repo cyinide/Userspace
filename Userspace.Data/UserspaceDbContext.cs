@@ -13,7 +13,7 @@ namespace Userspace.Data
     {
         public DbSet<Link> Links { get; set; }
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<UserLink> UserLinks { get; set; } //unnecessary?
+        public DbSet<UserLink> UserLinks { get; set; } 
 
         public UserspaceDbContext(DbContextOptions<UserspaceDbContext> options)
             : base(options)
@@ -25,10 +25,8 @@ namespace Userspace.Data
 
             builder
                 .ApplyConfiguration(new LinkConfiguration());
-
             builder
                 .ApplyConfiguration(new TagConfiguration());
-
             builder
                 .ApplyConfiguration(new UserLinkConfiguration());
         }

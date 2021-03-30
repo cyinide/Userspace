@@ -9,7 +9,6 @@ namespace Userspace.Api.Resources
 {
     public class UserResource
     {
-        public string UserId { get; set; }
-        public virtual ICollection<LinkResource> Links { get; set; }
+        public Guid UserId { get; set; }
     }
 }
