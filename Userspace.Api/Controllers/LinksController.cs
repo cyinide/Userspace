@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -20,11 +21,13 @@ namespace Userspace.Api.Controllers
     public class LinksController : ControllerBase
     {
         private readonly ILinkService _linkService;
+        private readonly IUserLinkService _userLinkService;
         private readonly IMapper _mapper;
-        public LinksController(ILinkService linkService, IMapper mapper)
+        public LinksController(ILinkService linkService, IUserLinkService userLinkService, IMapper mapper)
         {
             this._mapper = mapper;
             this._linkService = linkService;
+            this._userLinkService = userLinkService;
         }
         // GET: api/links
         [HttpGet("")]
@@ -48,6 +51,12 @@ namespace Userspace.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult<SaveLinkResource>> CreateLink([FromBody] SaveLinkResource saveLinkResource)
         {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if(String.IsNullOrEmpty(currentUserID))
+                return Unauthorized();
+
             var validator = new SaveLinkResourceValidator();
             var validationResult = await validator.ValidateAsync(saveLinkResource);
 
@@ -56,6 +65,8 @@ namespace Userspace.Api.Controllers
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
             var newLink = await _linkService.CreateLink(linkToCreate);
+
+            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
 
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
@@ -79,6 +90,15 @@ namespace Userspace.Api.Controllers
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
             return Ok(linkResource);
+        }
+        // GET: api/links/withtags
+        [HttpGet("withtagsbyuserid/{userId}")]
+        public async Task<ActionResult<IEnumerable<UserLinkResource>>> GetAllWithTagsByUserId(string userId)
+        {
+            var userLinks = await _linkService.GetLinksByUserId(userId);
+            var userLinkResources = _mapper.Map<IEnumerable<UserLink>, IEnumerable<UserLinkResource>>(userLinks);
+
+            return Ok(userLinkResources);
         }
     }
 }

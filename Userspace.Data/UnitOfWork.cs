@@ -13,12 +13,14 @@ namespace Userspace.Data
         private readonly UserspaceDbContext _context;
         private LinkRepository _linkRepository;
         private TagRepository _tagRepository;
+        private UserLinkRepository _userLinkRepository;
         public UnitOfWork(UserspaceDbContext context)
         {
             this._context = context;
         }
         public ILinkRepository Links => _linkRepository = _linkRepository ?? new LinkRepository(_context);
         public ITagRepository Tags => _tagRepository = _tagRepository ?? new TagRepository(_context);
+        public IUserLinkRepository UserLinks => _userLinkRepository = _userLinkRepository ?? new UserLinkRepository(_context);
 
         public async Task<int> CommitAsync()
         {

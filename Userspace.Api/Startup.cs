@@ -53,6 +53,7 @@ namespace Userspace.Api
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddTransient<ILinkService, LinkService>();
             services.AddTransient<ITagService, TagService>();
+            services.AddTransient<IUserLinkService, UserLinkService>();
 
             services.AddSwaggerGen(options =>
             {

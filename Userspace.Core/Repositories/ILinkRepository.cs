@@ -8,8 +8,8 @@ namespace Userspace.Core.Repositories
 {
     public interface ILinkRepository : IRepository<Link>
     {
-        Task<IEnumerable<Link>> GetLinksAsync();
         Task<IEnumerable<Link>> GetAllWithTagsAsync();
         Task<Link> GetWithTagsByIdAsync(int id);
+        Task<IEnumerable<UserLink>> GetLinksByUserId(string userId);
     }
 }

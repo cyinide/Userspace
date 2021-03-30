@@ -14,12 +14,6 @@ namespace Userspace.Data.Repositories
         public LinkRepository(UserspaceDbContext context)
             : base(context)
         { }
-        public async Task<IEnumerable<Link>> GetLinksAsync()
-        {
-            return await UserspaceDbContext.Links
-                .Include(x=>x.UserLinks)
-                .ToListAsync();
-        }
         public async Task<Link> GetLinkByIdAsync(int linkId)
         {
             return await UserspaceDbContext.Links
@@ -38,6 +32,14 @@ namespace Userspace.Data.Repositories
                .Include(x => x.Tags)
                .Where(x => x.ID == id)
                .FirstOrDefaultAsync();
+        }
+        public async Task<IEnumerable<UserLink>> GetLinksByUserId(string userId)
+        {
+            return await UserspaceDbContext.UserLinks
+                .Where(x => x.UserId == Guid.Parse(userId))
+                .Include(x => x.Link)
+                .ThenInclude(x => x.Tags)
+                .ToListAsync();
         }
         private UserspaceDbContext UserspaceDbContext
         {

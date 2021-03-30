@@ -10,6 +10,7 @@ namespace Userspace.Core
     {
         ILinkRepository Links { get; }
         ITagRepository Tags { get; }
+        IUserLinkRepository UserLinks { get; }
         Task<int> CommitAsync();
     }
 }
