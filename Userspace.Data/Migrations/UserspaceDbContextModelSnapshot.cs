@@ -339,13 +339,13 @@ namespace Userspace.Data.Migrations
             modelBuilder.Entity("Userspace.Core.Models.UserLink", b =>
                 {
                     b.HasOne("Userspace.Core.Models.Link", "Link")
-                        .WithMany()
+                        .WithMany("UserLinks")
                         .HasForeignKey("LinkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Userspace.Core.Models.Auth.User", "User")
-                        .WithMany()
+                        .WithMany("UserLinks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -10,5 +10,6 @@ namespace Userspace.Core.Models.Auth
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public virtual ICollection<Link> Links { get; set; }
     }
 }

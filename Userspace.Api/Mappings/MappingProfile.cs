@@ -27,6 +27,7 @@ namespace Userspace.Api.Mappings
             CreateMap<TagResource, Tag>();
             CreateMap<SaveLinkResource, Link>()
                 .ForMember(x => x.Tags, opt => opt.MapFrom(y => y.TagResources));
+                //map user resources
             CreateMap<SaveTagResource, Tag>();
         }
     }
