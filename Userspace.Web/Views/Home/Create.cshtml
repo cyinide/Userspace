@@ -6,7 +6,6 @@
 
 <h1>Add new link</h1>
 
-<h3>Append corresponding tags associated with it</h3>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,14 +13,30 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input id="linkUrl" asp-for="Name" class="form-control" placeholder="URL" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="button" id="addtags" value="Add tags" class="btn btn-success" />
+                <input type="button" id="hidetags" value="Cancel" class="btn btn-primary" />
+                <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
         </form>
+
+        <table id="Table">
+            <tbody>
+                @Html.EditorFor(m => m.TagResources);
+            </tbody>
+        </table>
+
+        <button id="createtag" type="button" class="btn btn-primary">Create tag</button>
     </div>
+</div> 
+
+<div id="usertags" style="display:none">  
+    @*@await Html.PartialAsync("TagsPartial");*@
+    @*@await Component.InvokeAsync(nameof(TagSelectViewComponent), new { linkUrl = "www.example.com/?foo=bar&hello=world" });*@
 </div>
 
 <div>
@@ -30,4 +45,45 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("input[id$='addtags']").click(function () {
+                document.getElementById('usertags').style.display = 'block';
+                $("input[id$='linkurl']").attr("disabled", "disabled");
+                var url = $('#linkUrl').val();
+                $.ajax({
+                    url: '/Home/TagsPartial',
+                    data: { linkUrl: url },
+                    contentType: 'application/html; charset=utf-8',
+                    type: 'GET',
+                    dataType: 'html'
+                })
+                    .success(function (result) {
+                        $('#usertags').html(result);
+                    })
+                    .error(function (xhr, status) {
+                        alert(status);
+                    });
+            });
+        });
+                $(document).ready(function () {
+                    $("input[id$='hidetags']").click(function () {
+                        document.getElementById('usertags').style.display = 'none';
+                        $("input[id$='linkurl']").removeAttr("disabled");
+                    });
+                });
+        $('#createtag').click(function () {
+            $.ajax({
+                url: 'CreateTag',
+                cache: false,
+                success: function (data) {
+                    $('#Table > tbody').append(data);
+                },
+                error: function (a, b, c) {
+                    alert(a + " " + b + " " + c);
+                }
+            });
+        });
+    </script>
 }

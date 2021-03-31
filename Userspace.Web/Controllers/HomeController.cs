@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
@@ -28,6 +29,7 @@ namespace Userspace.Web.Controllers
             _tagService = tagService;
             _authService = authService;
         }
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var x = User.Identity.Name;
@@ -39,11 +41,36 @@ namespace Userspace.Web.Controllers
             return View(links);
 
         }
+        [HttpGet]
         public async Task<IActionResult> Tags()
         {
             TempData["Message"] = "Hello ," + Settings.CurrentUserName;
             var tags = await _tagService.GetTags();
             return View(tags);
+        }
+        [HttpGet]
+
+        public async Task<IActionResult> TagsPartial(string linkUrl)
+        {
+            var linkOccurance = await _linkService.CheckLinkForOccurance(linkUrl);
+            if (linkOccurance != null)
+            {
+                var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
+                if (response != null && response.Any())
+                {
+                    var tagResources = new List<TagResource>(response.ToList());
+                    var mv = new ModelVariables();
+                    mv.Options = tagResources.Select(x =>
+                    new SelectListItem
+                    {
+                        Value = x.ID.ToString(),
+                        Text = x.Name
+                    }).ToList();
+
+                    return View(mv);
+                }
+            }
+            return View();
         }
         [HttpGet]
         public ActionResult Login()
@@ -87,25 +114,20 @@ namespace Userspace.Web.Controllers
             return RedirectToAction("Login");
         }
         [HttpGet]
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
             return View();
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult> Create(LinkResource model) // linkresource -> linkviewmodel; create->createlink
+        public async Task<ActionResult> Create(LinkResource model)
         {
-            List<TagViewModel> tags = new List<TagViewModel>();
-
-            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
-            if (linkOccurance != null)
-            {
-                 tags = (await _tagService.GetTagsByLinkId(linkOccurance.ID)).ToList();
-            }
-
-            //var createdLink = await _linkService.CreateLink(model);
+            var createdLink = await _linkService.CreateLink(model);
             return RedirectToAction("Index");
-
+        }
+        public IActionResult CreateTag()
+        {
+            return PartialView("TagCreate", new TagResource { });
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

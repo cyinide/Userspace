@@ -31,11 +31,14 @@ namespace Userspace.Web.Services
             try
             {
                 List<LinkViewModel> links = new List<LinkViewModel>();
-                var response = await _httpClient.GetAsync(linksUrl + "/withtagsbyuserid/" + userId);
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                links = JsonConvert.DeserializeObject<List<LinkViewModel>>(apiResponse);
-                return links;
-            }
+                if (!String.IsNullOrEmpty(userId))
+                {
+                    var response = await _httpClient.GetAsync(linksUrl + "/withtagsbyuserid/" + userId);
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    links = JsonConvert.DeserializeObject<List<LinkViewModel>>(apiResponse);
+                }
+                    return links;
+                }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -46,7 +49,9 @@ namespace Userspace.Web.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync(linksUrl + "/checkforoccurance/" + name);
+                var querystring = Uri.EscapeDataString(name);
+
+                var response = await _httpClient.GetAsync(linksUrl + "/checkforoccurance/" + querystring);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var link = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
                 return link;

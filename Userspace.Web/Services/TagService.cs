@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
+using Userspace.Web.Resources;
 
 namespace Userspace.Web.Services
 {
@@ -38,16 +39,16 @@ namespace Userspace.Web.Services
                 throw new Exception();
             }
         }
-        public async Task<IEnumerable<TagViewModel>> GetTagsByLinkId(int linkId)
+        public async Task<IEnumerable<TagResource>> GetTagsByLinkId(int linkId) //tagresource -> tagviewmodel
         {
             try
             {
-                List<TagViewModel> tags = new List<TagViewModel>();
+                List<TagResource> tags = new List<TagResource>();
 
                 var response = await _httpClient.GetAsync(tagsUrl+ "/bylinkid/" + linkId);
                 string apiResponse = await response.Content.ReadAsStringAsync();
 
-                tags = JsonConvert.DeserializeObject<List<TagViewModel>>(apiResponse);
+                tags = JsonConvert.DeserializeObject<List<TagResource>>(apiResponse);
                 return tags;
             }
             catch (Exception)
