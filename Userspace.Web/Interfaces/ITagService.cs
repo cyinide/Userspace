@@ -11,5 +11,6 @@ namespace Userspace.Web.Interfaces
         Task<IEnumerable<TagViewModel>> GetTags();
         Task<TagViewModel> GetTagById(int id);
         Task<TagViewModel> CreateTag(TagViewModel link);
+        Task<IEnumerable<TagViewModel>> GetTagsByLinkId(int linkId);
     }
 }

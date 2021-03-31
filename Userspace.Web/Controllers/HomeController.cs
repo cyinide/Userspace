@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Models.Auth;
+using Userspace.Web.Resources;
 
 namespace Userspace.Web.Controllers
 {
@@ -85,6 +86,28 @@ namespace Userspace.Web.Controllers
             ViewBag.Message = string.Format("User signed in.");
             return RedirectToAction("Login");
         }
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> Create(LinkResource model) // linkresource -> linkviewmodel; create->createlink
+        {
+            List<TagViewModel> tags = new List<TagViewModel>();
+
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
+            if (linkOccurance != null)
+            {
+                 tags = (await _tagService.GetTagsByLinkId(linkOccurance.ID)).ToList();
+            }
+
+            //var createdLink = await _linkService.CreateLink(model);
+            return RedirectToAction("Index");
+
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

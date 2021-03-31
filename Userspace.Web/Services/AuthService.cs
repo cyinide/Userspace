@@ -30,13 +30,17 @@ namespace Userspace.Web.Services
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
 
                 var result = await _httpClient.PostAsync(authUrl + "/signin", stringContent);
-                var jwt = await result.Content.ReadAsStringAsync();
 
-                var handler = new JwtSecurityTokenHandler();
-                var token = handler.ReadJwtToken(jwt);
-                Settings.CurrentUserId = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-                Settings.CurrentUserName = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
-                Settings.JwtToken = jwt;
+                if (result.IsSuccessStatusCode)
+                {
+                    var jwt = await result.Content.ReadAsStringAsync();
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var token = handler.ReadJwtToken(jwt);
+                    Settings.CurrentUserId = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+                    Settings.CurrentUserName = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
+                    Settings.JwtToken = jwt;
+                }
 
                 return result.IsSuccessStatusCode;    
             }
