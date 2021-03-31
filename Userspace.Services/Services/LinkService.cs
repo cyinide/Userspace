@@ -25,6 +25,11 @@ namespace Userspace.Services.Services
             return await _unitOfWork.Links
                 .GetByIdAsync(id);
         }
+        public async Task<Link> CheckForLinkOccuranceAsync(string name)
+        {
+            return await _unitOfWork.Links
+                .CheckForLinkOccuranceAsync(name);
+        }
         public async Task<Link> CreateLink(Link newLink)
         {
             await _unitOfWork.Links.AddAsync(newLink);
@@ -44,7 +49,7 @@ namespace Userspace.Services.Services
         public async Task<IEnumerable<UserLink>> GetLinksByUserId(string userId)
         {
             return await _unitOfWork.Links
-                .GetLinksByUserId(userId);
+                .GetLinksByUserIdAsync(userId);
         }
     }
 }

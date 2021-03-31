@@ -21,12 +21,14 @@ namespace Userspace.Api.Controllers
     public class LinksController : ControllerBase
     {
         private readonly ILinkService _linkService;
+        private readonly ITagService _tagService;
         private readonly IUserLinkService _userLinkService;
         private readonly IMapper _mapper;
-        public LinksController(ILinkService linkService, IUserLinkService userLinkService, IMapper mapper)
+        public LinksController(ILinkService linkService, ITagService tagService, IUserLinkService userLinkService, IMapper mapper)
         {
             this._mapper = mapper;
             this._linkService = linkService;
+            this._tagService = tagService;
             this._userLinkService = userLinkService;
         }
         // GET: api/links
@@ -47,27 +49,42 @@ namespace Userspace.Api.Controllers
 
             return Ok(linkResource);
         }
+        // GET: api/links/name
+        [HttpGet("checkforoccurance/{name}")]
+        public async Task<ActionResult<bool>> CheckForLinkOccurance(string name)
+        {
+            var result = await _linkService.CheckForLinkOccuranceAsync(name);
+            return Ok(result);
+        }
         // POST: api/links
         [HttpPost("")]
         public async Task<ActionResult<SaveLinkResource>> CreateLink([FromBody] SaveLinkResource saveLinkResource)
         {
             ClaimsPrincipal currentUser = this.User;
+            if (!currentUser.Claims.Any()) //temporary
+                return Unauthorized(); 
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-            if(String.IsNullOrEmpty(currentUserID))
-                return Unauthorized();
 
             var validator = new SaveLinkResourceValidator();
             var validationResult = await validator.ValidateAsync(saveLinkResource);
-
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
+            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
+
+            if (saveLinkResource.UserId == currentUserID && existingLink != null)
+                return BadRequest();
+            else if (existingLink != null)
+            {
+                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
+                return NoContent();
+            }
+
+            if (linkToCreate.Name.StartsWith("http://"))
+                linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
             var newLink = await _linkService.CreateLink(linkToCreate);
-
             await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
-
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 

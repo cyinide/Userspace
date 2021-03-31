@@ -20,6 +20,30 @@ namespace Userspace.Data.Repositories
                 .Where(x => x.ID == linkId)
                     .SingleOrDefaultAsync();
         }
+        public async Task<Link> CheckForLinkOccuranceAsync(string name)
+        {
+            string string1 = name.Replace("%2F","/");
+            if (string1.StartsWith("http://"))
+                string1 = string1.Remove(0, 7);
+
+            string[] words1 = string1.Split(new char[] { ',', '?', '=', '&' });
+            HashSet<string> mySet1 = new HashSet<string>(words1.ToList());
+
+            foreach (var link in UserspaceDbContext.Links)
+            {
+                string[] words2 = link.Name.Split(new char[] { ',', '?', '=', '&' });
+                HashSet<string> mySet2 = new HashSet<string>(words2.ToList());
+                HashSet<string> mySetTemp = new HashSet<string>(mySet1);
+                mySet1.ExceptWith(mySet2);
+                if (!mySet1.Any())
+                    return link;
+                else
+                {
+                    mySet1 = new HashSet<string>(mySetTemp);
+                }
+            }
+            return null;
+        }
         public async Task<IEnumerable<Link>> GetAllWithTagsAsync()
         {
             return await UserspaceDbContext.Links
@@ -33,7 +57,7 @@ namespace Userspace.Data.Repositories
                .Where(x => x.ID == id)
                .FirstOrDefaultAsync();
         }
-        public async Task<IEnumerable<UserLink>> GetLinksByUserId(string userId)
+        public async Task<IEnumerable<UserLink>> GetLinksByUserIdAsync(string userId)
         {
             return await UserspaceDbContext.UserLinks
                 .Where(x => x.UserId == Guid.Parse(userId))
