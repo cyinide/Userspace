@@ -1,6 +1,6 @@
 ﻿@model Userspace.Web.Resources.ModelVariables
 
-@*@{
+@{
     ViewData["Title"] = "Tags partial";
 }
 
@@ -14,4 +14,39 @@
             <input type="submit" />
         }
     }
-</body>*@
+</body>
+
+<table id="Table">
+    <tbody>
+        @Html.EditorFor(x => x.TagName)
+    </tbody>
+</table>
+
+@Html.ActionLink(
+    "Create tag",
+    "CreateTag",
+    "Home",
+    new
+    {
+        TagName = Model.TagName,
+        LinkId = Model.LinkId
+    },
+    null
+)
+
+<script>
+  //$('#createtag').click(function () {
+  //          var url = $('#tagName').val();
+  //          $.ajax({
+  //              url: 'CreateTag',
+  //              data: {tagName :"fwafwa", linkId : "1234" },
+  //              cache: false,
+  //              success: function (data) {
+  //                  $('#Table > tbody').append(data);
+  //              },
+  //              error: function (a, b, c) {
+  //                  alert(a + " " + b + " " + c);
+  //              }
+  //          });
+  //      });
+</script>

@@ -77,11 +77,9 @@ namespace Userspace.Api.Controllers
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
             if (linkToCreate.Name.StartsWith("http://"))
                 linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
-            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
 
-            if (saveLinkResource.UserId == currentUserID && existingLink != null)
-                return BadRequest();
-            else if (existingLink != null)
+            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
+            if (existingLink != null)
             {
                 await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
                 return NoContent();

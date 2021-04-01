@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -62,18 +63,20 @@ namespace Userspace.Web.Services
             }
         }
         [HttpPost]
-        public async Task<LinkResource> CreateLink(LinkResource link) //linkresource -> linkviewmodel
+        public async Task<LinkResource> CreateLink(LinkResource link) 
         {
             try
             {
+                link.UserId = Settings.CurrentUserId;
                 var obj = JsonConvert.SerializeObject(link);
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
 
                 var response = await _httpClient.PostAsync(linksUrl, stringContent);
+                if (response.StatusCode == HttpStatusCode.NoContent)
+                    return new LinkResource{ Name = link.Name };
 
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var createdLink = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
-
                 return createdLink;
             }
             catch (Exception ex)

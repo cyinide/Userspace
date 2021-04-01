@@ -18,8 +18,8 @@
             </div>
 
             <div class="form-group">
-                <input type="button" id="addtags" value="Add tags" class="btn btn-success" />
-                <input type="button" id="hidetags" value="Cancel" class="btn btn-primary" />
+                @*<input type="button" id="addtags" value="Add tags" class="btn btn-success" />*@
+                @*<input type="button" id="hidetags" value="Cancel" class="btn btn-primary" />*@
                 <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
         </form>
@@ -28,13 +28,13 @@
             @*@await Html.PartialAsync("TagsPartial");*@
         </div>
 
-        <table id="Table">
+        @*<table id="Table">
             <tbody>
                 @Html.EditorFor(x => x.TagResources.ElementAt(0).Name)
             </tbody>
         </table>
 
-        <button id="createtag" style="margin-top: 4px;" type="button" class="btn btn-primary">Create tag</button>
+        <button id="createtag" style="margin-top: 4px;" type="button" class="btn btn-primary">Create tag</button>*@
     </div>
 </div>
 
@@ -75,8 +75,10 @@
             });
         });
         $('#createtag').click(function () {
+            var url = $('#tagName').val();
             $.ajax({
                 url: 'CreateTag',
+                data: {tagName :"fwafwa", linkId : "1234" },
                 cache: false,
                 success: function (data) {
                     $('#Table > tbody').append(data);

@@ -46,9 +46,9 @@ namespace Userspace.Web.Controllers
         }
         [HttpGet]
 
-        public async Task<IActionResult> TagsPartial(string linkUrl)
+        public async Task<IActionResult> TagsPartial(LinkResource model)
         {
-            var linkOccurance = await _linkService.CheckLinkForOccurance(linkUrl);
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
             {
                 var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
@@ -56,6 +56,8 @@ namespace Userspace.Web.Controllers
                 {
                     var tagResources = new List<TagResource>(response.ToList());
                     var mv = new ModelVariables();
+                    mv.LinkId = model.ID;
+                    mv.TagName = model.Name;
                     mv.Options = tagResources.Select(x =>
                     new SelectListItem
                     {
@@ -63,10 +65,11 @@ namespace Userspace.Web.Controllers
                         Text = x.Name
                     }).ToList();
 
-                    return View(mv);
+                    return View("TagsPartial", mv);
                 }
+                model.ID = linkOccurance.ID;
             }
-            return View();
+            return View("TagsCreate", model);
         }
         [HttpGet]
         public ActionResult Login()
@@ -119,17 +122,29 @@ namespace Userspace.Web.Controllers
         public async Task<ActionResult> Create(LinkResource model)
         {
             var createdLink = await _linkService.CreateLink(model);
+            if(createdLink.ID != 0)
+            return RedirectToAction("TagsCreate", createdLink);
+            //prompt message
+            return RedirectToAction("TagsPartial", createdLink);
+        }
+        public async Task<ActionResult> CreateTag(TagPartial model)
+        {
+            await _tagService.CreateTag(new TagResource { LinkId = Convert.ToInt32(model.LinkId), Name = model.TagName });
+
+            //.. allow adding more tags
+
             return RedirectToAction("Index");
         }
-        public IActionResult CreateTag()
+        [HttpGet]
+        public async Task<ActionResult> TagsCreate(LinkResource model)
         {
-            return PartialView("TagCreate", new TagResource { });
+            return View(model);
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

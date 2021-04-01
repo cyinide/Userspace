@@ -6,10 +6,19 @@ using System.Threading.Tasks;
 
 namespace Userspace.Web.Resources
 {
+    public class TagPartial
+    {
+        public string TagName { get; set; }
+        public string LinkId { get; set; }
+    }
+
     public class ModelVariables
     {
         public IEnumerable<SelectListItem> Options { set; get; }
         public string[] SelectedOptions { set; get; }
+        public int LinkId { get; set; }
+        public string TagName { get; set; }
+
     }
 
     public class TagResource

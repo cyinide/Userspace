@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
@@ -39,7 +41,7 @@ namespace Userspace.Web.Services
                 throw new Exception();
             }
         }
-        public async Task<IEnumerable<TagResource>> GetTagsByLinkId(int linkId) //tagresource -> tagviewmodel
+        public async Task<IEnumerable<TagResource>> GetTagsByLinkId(int linkId) 
         {
             try
             {
@@ -60,9 +62,24 @@ namespace Userspace.Web.Services
         {
             throw new NotImplementedException();
         }
-        public Task<TagViewModel> CreateTag(TagViewModel link)
+        public async Task<TagResource> CreateTag(TagResource tag) 
         {
-            throw new NotImplementedException();
+            try
+            {
+                var obj = JsonConvert.SerializeObject(tag);
+                var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
+
+                var response = await _httpClient.PostAsync(tagsUrl, stringContent);
+
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                var createdTag = JsonConvert.DeserializeObject<TagResource>(apiResponse);
+
+                return createdTag;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }
