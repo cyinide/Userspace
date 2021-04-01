@@ -32,14 +32,10 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var x = User.Identity.Name;
-            var y = User.Identity.IsAuthenticated;
-
             TempData["Message"] = "Hello ," + Settings.CurrentUserName;
             var links = await _linkService.GetLinks(Settings.CurrentUserId);
 
             return View(links);
-
         }
         [HttpGet]
         public async Task<IActionResult> Tags()
