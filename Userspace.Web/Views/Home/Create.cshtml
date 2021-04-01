@@ -23,13 +23,22 @@
                 <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
         </form>
-    </div>
-</div> 
 
-<div id="usertags" style="display:none">  
-    @*@await Html.PartialAsync("TagsPartial");*@
-    @*@await Component.InvokeAsync(nameof(TagSelectViewComponent), new { linkUrl = "www.example.com/?foo=bar&hello=world" });*@
+        <div id="usertags" style="display:none">
+            @*@await Html.PartialAsync("TagsPartial");*@
+        </div>
+
+        <table id="Table">
+            <tbody>
+                @Html.EditorFor(x => x.TagResources.ElementAt(0).Name)
+            </tbody>
+        </table>
+
+        <button id="createtag" style="margin-top: 4px;" type="button" class="btn btn-primary">Create tag</button>
+    </div>
 </div>
+
+
 
 <div>
     <a asp-action="Index">Back to homepage</a>
@@ -59,12 +68,12 @@
                     });
             });
         });
-                $(document).ready(function () {
-                    $("input[id$='hidetags']").click(function () {
-                        document.getElementById('usertags').style.display = 'none';
-                        $("input[id$='linkurl']").removeAttr("disabled");
-                    });
-                });
+        $(document).ready(function () {
+            $("input[id$='hidetags']").click(function () {
+                document.getElementById('usertags').style.display = 'none';
+                $("input[id$='linkurl']").removeAttr("disabled");
+            });
+        });
         $('#createtag').click(function () {
             $.ajax({
                 url: 'CreateTag',

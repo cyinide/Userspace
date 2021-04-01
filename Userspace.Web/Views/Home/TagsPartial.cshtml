@@ -1,17 +1,17 @@
 ﻿@model Userspace.Web.Resources.ModelVariables
 
-    @{
-        ViewData["Title"] = "Tags partial";
-    }
+@*@{
+    ViewData["Title"] = "Tags partial";
+}
 
-    <body>
-        @if (Model != null)
-            {
-            @using (Html.BeginForm())
-            {
-                <label> Select items </label>
-                @Html.ListBoxFor(s => s.SelectedOptions, Model.Options)
-                <input type="submit" />
-            }
-            }
-    </body>
+<body>
+    @if (Model != null)
+    {
+        @using (Html.BeginForm())
+        {
+            <label> Select items </label>
+            @Html.ListBoxFor(s => s.SelectedOptions, Model.Options)
+            <input type="submit" />
+        }
+    }
+</body>*@
