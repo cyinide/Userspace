@@ -1,0 +1,40 @@
+﻿@model Userspace.Web.Resources.LinkResource
+
+@{
+    ViewData["Title"] = "Tags partial";
+}
+<table id="Table">
+    <tbody>
+        @Html.EditorFor(x => x.Name)
+    </tbody>
+</table>
+
+
+@Html.ActionLink(
+    "Create tag",                                                 
+    "CreateTag",                                  
+    "Home",                                                 
+    new
+    {                                                   
+        TagName = Model.Name,
+        LinkId = Model.ID
+    },
+    null                                                    
+)
+
+<script>
+      //$('#createtag').click(function () {
+      //      var url = $('#tagName').val();
+      //      $.ajax({
+      //          url: 'CreateTag',
+      //          data: {tagName :"fwafwa", linkId : "1234" },
+      //          cache: false,
+      //          success: function (data) {
+      //              $('#Table > tbody').append(data);
+      //          },
+      //          error: function (a, b, c) {
+      //              alert(a + " " + b + " " + c);
+      //          }
+      //      });
+      //  });
+</script>

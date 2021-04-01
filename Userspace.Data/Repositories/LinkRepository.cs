@@ -20,7 +20,8 @@ namespace Userspace.Data.Repositories
                 .Where(x => x.ID == linkId)
                     .SingleOrDefaultAsync();
         }
-        public async Task<Link> CheckForLinkOccuranceAsync(string name)
+        //refactor based on DRY principles
+        public async Task<Link> CheckForLinkOccuranceAsync(string name) 
         {
             string string1 = name.Replace("%2F","/");
             if (string1.StartsWith("http://"))
@@ -29,8 +30,11 @@ namespace Userspace.Data.Repositories
             string[] words1 = string1.Split(new char[] { ',', '?', '=', '&' });
             HashSet<string> mySet1 = new HashSet<string>(words1.ToList());
 
-            foreach (var link in UserspaceDbContext.Links)
+            foreach (var link in UserspaceDbContext.Links) 
             {
+                if (link.Name.StartsWith("http://"))
+                    link.Name = link.Name.Remove(0, 7); //just in case
+
                 string[] words2 = link.Name.Split(new char[] { ',', '?', '=', '&' });
                 HashSet<string> mySet2 = new HashSet<string>(words2.ToList());
                 HashSet<string> mySetTemp = new HashSet<string>(mySet1);

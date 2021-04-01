@@ -45,16 +45,20 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<LinkResource>> GetLinkById(int id)
         {
             var link = await _linkService.GetLinkById(id);
+            if (link == null)
+                return NotFound();
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
             return Ok(linkResource);
         }
         // GET: api/links/name
         [HttpGet("checkforoccurance/{name}")]
-        public async Task<ActionResult<bool>> CheckForLinkOccurance(string name)
+        public async Task<ActionResult<LinkResource>> CheckForLinkOccuranceAsync(string name)
         {
-            var result = await _linkService.CheckForLinkOccuranceAsync(name);
-            return Ok(result);
+            var link = await _linkService.CheckForLinkOccuranceAsync(name);
+            var linkResource = _mapper.Map<Link, LinkResource>(link);
+
+            return Ok(linkResource);
         }
         // POST: api/links
         [HttpPost("")]
@@ -71,18 +75,16 @@ namespace Userspace.Api.Controllers
                 return BadRequest(validationResult.Errors);
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
-            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
+            if (linkToCreate.Name.StartsWith("http://"))
+                linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
 
-            if (saveLinkResource.UserId == currentUserID && existingLink != null)
-                return BadRequest();
-            else if (existingLink != null)
+            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
+            if (existingLink != null)
             {
                 await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
                 return NoContent();
             }
 
-            if (linkToCreate.Name.StartsWith("http://"))
-                linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
             var newLink = await _linkService.CreateLink(linkToCreate);
             await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
             var link = await _linkService.GetLinkById(newLink.ID);
@@ -95,6 +97,9 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<IEnumerable<LinkResource>>> GetAllWithTags()
         {
             var links = await _linkService.GetAllWithTagsAsync();
+            if (links == null)
+                return NotFound();
+
             var linkResources = _mapper.Map<IEnumerable<Link>, IEnumerable<LinkResource>>(links);
 
             return Ok(linkResources);
@@ -104,6 +109,9 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<LinkResource>> GetWithTagsById(int id)
         {
             var link = await _linkService.GetWithTagsByIdAsync(id);
+            if (link == null)
+                return NotFound();
+
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
             return Ok(linkResource);
@@ -113,6 +121,9 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<IEnumerable<UserLinkResource>>> GetAllWithTagsByUserId(string userId)
         {
             var userLinks = await _linkService.GetLinksByUserId(userId);
+            if (userLinks == null)
+                return NotFound();
+
             var userLinkResources = _mapper.Map<IEnumerable<UserLink>, IEnumerable<UserLinkResource>>(userLinks);
 
             return Ok(userLinkResources);

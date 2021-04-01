@@ -38,6 +38,8 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<TagResource>> GetTagById(int id)
         {
             var tag = await _tagService.GetTagById(id);
+            if (tag == null)
+                return NotFound();
             var tagResource = _mapper.Map<Tag, TagResource>(tag);
 
             return Ok(tagResource);
@@ -65,6 +67,8 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<IEnumerable<LinkResource>>> GetTagsByLinkId(int linkId)
         {
             var tags = await _tagService.GetTagsByLinkId(linkId);
+            if (tags == null)
+                return NotFound();
             var tagResources = _mapper.Map<IEnumerable<Tag>, IEnumerable<TagResource>>(tags);
 
             return Ok(tagResources);

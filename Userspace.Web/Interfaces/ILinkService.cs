@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Userspace.Web.Models;
+using Userspace.Web.Resources;
 
 namespace Userspace.Web.Interfaces
 {
@@ -10,6 +11,7 @@ namespace Userspace.Web.Interfaces
     {
          Task<IEnumerable<LinkViewModel>> GetLinks(string userId);
          Task<LinkViewModel> GetLinkById(int id);
-         Task<LinkViewModel> CreateLink(LinkViewModel link);
+         Task<LinkResource> CreateLink(LinkResource link);
+         Task<LinkResource> CheckLinkForOccurance(string name);
     }
 }
