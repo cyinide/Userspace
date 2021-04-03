@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Userspace.Web.Models.TagViewModel>
+﻿@model IEnumerable<Userspace.Web.Resources.TagResource>
 
 @{
     ViewData["Title"] = "Tags";
@@ -24,31 +24,26 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.ActionLink("Create", "Tags", new
-               {
-                   controller = "Home",
-                   action = "Tags"
-               }) |
-                    @Html.ActionLink("Edit", "Tags", new
-               {
-                   controller = "Home",
-                   action = "Tags"
-               }) |
-                    @Html.ActionLink("Delete", "Tags", new
-                 {
-                     controller = "Home",
-                     action = "Tags"
-                 })
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Index", new
+           {
+               controller = "Home",
+               action = "Index"
+           }, new { onclick = "javascript:return false;" }) &nbsp; | &nbsp;
+                @Html.ActionLink("Delete", "Index", new
+           {
+               controller = "Home",
+               action = "Index"
+           }, new { onclick = "javascript:return false;" })
+            </td>
+        </tr>
         }
     </tbody>
 </table>

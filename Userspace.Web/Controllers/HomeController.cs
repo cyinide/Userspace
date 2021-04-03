@@ -43,6 +43,13 @@ namespace Userspace.Web.Controllers
             return View(tags);
         }
         [HttpGet]
+        public async Task<IActionResult> TagsByLink(int linkId)
+        {
+            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
+            var tags = await _tagService.GetTagsByLinkId(linkId);
+            return View("Tags", tags);
+        }
+        [HttpGet]
         public async Task<IActionResult> TagsPartial(LinkResource model)
         {
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
