@@ -15,7 +15,7 @@
 
 <hr />
 <div >
-    <label class="text-danger">@ViewBag.ErrorMessage</label>
+    <label style="font-size:smaller" class="text-danger">@ViewBag.ErrorMessage</label>
 </div>
 <div class="row">
     <div class="col-md-4">
@@ -23,7 +23,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input id="linkUrl" asp-for="Name" class="form-control" placeholder="URL" />
+                <input id="linkUrl" asp-for="Name" style="width:300px" class="form-control" placeholder="URL" />
                 <span id="valmsg" style="display:none" asp-validation-for="Name" class="text-danger"></span>
             </div>
 
@@ -31,7 +31,6 @@
                 <input type="button" id="addtags" value="Show tags" onclick="ShowTags()" class="btn btn-success" />
                 <input type="button" id="hidetags" value="Cancel" onclick="HideTags()" class="btn btn-primary" />
             </div>
-
 
             <div id="tagItemsContainer" style="display:none">
                 @Html.EditorFor(Model => Model.TagResources)
@@ -78,7 +77,19 @@
                 async: true,
                 data: $('#createform').serialize(),
                 type: "POST",
-                url: '/Home/AddTag',
+                url: '/Home/InitializeTags',
+                success: function (partialView) {
+                    $('#tagItemsContainer').html(partialView);
+                }
+            });
+        });
+
+        $("#hidetags").on('click', function () {
+            $.ajax({
+                async: true,
+                data: $('#createform').serialize(),
+                type: "POST",
+                url: '/Home/ClearTags',
                 success: function (partialView) {
                     $('#tagItemsContainer').html(partialView);
                 }
@@ -117,6 +128,7 @@
                 return;
             }
 
+            document.getElementById('valmsg').style.display = 'none';
             document.getElementById("createform").submit();
         }
 
