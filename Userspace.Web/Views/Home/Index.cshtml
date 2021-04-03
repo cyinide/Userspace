@@ -32,21 +32,16 @@
                     @Html.DisplayFor(modelItem => item.Link.Name)
                 </td>
                 <td>
-                    @Html.ActionLink("Create", "Index", new
-               {
-                   controller = "Home",
-                   action = "Index"
-               }) |
                     @Html.ActionLink("Edit", "Index", new
                {
                    controller = "Home",
                    action = "Index"
-               }) |
+               }, new { onclick = "javascript:return false;" }) &nbsp; | &nbsp;
                     @Html.ActionLink("Delete", "Index", new
-                 {
-                     controller = "Home",
-                     action = "Index"
-                 })
+               {
+                   controller = "Home",
+                   action = "Index"
+               }, new { onclick = "javascript:return false;" })
                 </td>
             </tr>
         }

@@ -1,0 +1,21 @@
+﻿@model Userspace.Web.Resources.TagResource
+
+
+@{
+    ViewData["Title"] = "Tag create";
+}
+
+    <body>
+        @*<label asp-for="Name" class="control-label"></label>
+        <input id="linkUrl" asp-for="Name" class="form-control" placeholder="Tag name" />
+        <span asp-validation-for="Name" class="text-danger"></span>*@
+
+        <table id="Table">
+            <tbody>
+                @Html.EditorFor(m => m.Name);
+            </tbody>
+        </table>
+
+        <button id="CreateTag" type="button" class="btn btn-primary">Add tag</button>
+
+    </body>
