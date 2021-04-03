@@ -27,5 +27,7 @@ namespace Userspace.Web.Resources
         public string Name { get; set; }
         public int LinkId { get; set; }
         public int NumberOfOccurances { get; set; } = 5;
+
+        public bool IsDeleted { get; set; }
     }
 }

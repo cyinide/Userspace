@@ -22,7 +22,6 @@ namespace Userspace.Web.Controllers
         public ILinkService _linkService { get; private set; }
         public ITagService _tagService { get; private set; }
         public IAuthService _authService { get; private set; }
-
         public HomeController(IAuthService authService, ILinkService linkService, ITagService tagService)
         {
             _linkService = linkService;
@@ -32,20 +31,18 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            TempData["Message"] = "Hello ," + Settings.CurrentUserName;
+            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var links = await _linkService.GetLinks(Settings.CurrentUserId);
-
             return View(links);
         }
         [HttpGet]
         public async Task<IActionResult> Tags()
         {
-            TempData["Message"] = "Hello ," + Settings.CurrentUserName;
+            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var tags = await _tagService.GetTags();
             return View(tags);
         }
         [HttpGet]
-
         public async Task<IActionResult> TagsPartial(LinkResource model)
         {
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
@@ -112,20 +109,27 @@ namespace Userspace.Web.Controllers
             ViewBag.Message = string.Format("User signed in.");
             return RedirectToAction("Login");
         }
-        [HttpGet]
-        public async Task<ActionResult> Create()
-        {
-            return View();
-        }
-        [HttpPost]
+        //[HttpGet]
+        //public async Task<ActionResult> Create()
+        //{
+        //    return View();
+        //}
+
         [AllowAnonymous]
-        public async Task<ActionResult> Create(LinkResource model)
+        public async Task<ActionResult> Create([Bind("Name,  TagResources")] LinkResource model)
         {
-            var createdLink = await _linkService.CreateLink(model);
-            if(createdLink.ID != 0)
-            return RedirectToAction("TagsCreate", createdLink);
-            //prompt message
-            return RedirectToAction("TagsPartial", createdLink);
+            if (!String.IsNullOrEmpty(model.Name))
+            {
+                var createdLink = await _linkService.CreateLink(model);
+                if (createdLink.ID != 0)
+                    //    return RedirectToAction("TagsCreate", createdLink);
+                    ////prompt message
+                    //return RedirectToAction("TagsPartial", createdLink);
+
+                    return RedirectToAction("Index");
+            }
+
+            return View(model);
         }
         public async Task<ActionResult> CreateTag(TagPartial model)
         {
@@ -140,11 +144,15 @@ namespace Userspace.Web.Controllers
         {
             return View(model);
         }
+        public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource link)
+        {
+            link.TagResources.Add(new TagResource());
+            return PartialView("TagRow", link);
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
     }
 }

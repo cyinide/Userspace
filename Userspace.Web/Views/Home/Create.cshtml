@@ -4,89 +4,126 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Add new link</h1>
+<div class="lineContainer">
+    <div class="left">
+        <h2>Create link</h2>
+    </div>
+    <div class="right" style="text-align:end">
+        <input type="submit" value="Create" onclick="SubmitMyForm()" class="btn btn-primary" />
+    </div>
+</div>
 
 <hr />
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="createform">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input id="linkUrl" asp-for="Name" class="form-control" placeholder="URL" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <span id="valmsg" style="display:none" asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                @*<input type="button" id="addtags" value="Add tags" class="btn btn-success" />*@
-                @*<input type="button" id="hidetags" value="Cancel" class="btn btn-primary" />*@
-                <input type="submit" value="Submit" class="btn btn-primary" />
+                <input type="button" id="addtags" value="Show tags" onclick="ShowTags()" class="btn btn-success" />
+                <input type="button" id="hidetags" value="Cancel" onclick="HideTags()" class="btn btn-primary" />
             </div>
+
+
+            <div id="tagItemsContainer" style="display:none">
+                @Html.EditorFor(Model => Model.TagResources)
+            </div>
+            <div class="row" id="addtagbutton" style="display:none">
+                <div class="col-md-4">
+                    <input class="btn btn-info" type="button" id="btnAdd" value="Add tag" />
+                </div>
+            </div>
+
         </form>
-
-        <div id="usertags" style="display:none">
-            @*@await Html.PartialAsync("TagsPartial");*@
+        <div>
+            <a asp-action="Index">Back to homepage</a>
         </div>
-
-        @*<table id="Table">
-            <tbody>
-                @Html.EditorFor(x => x.TagResources.ElementAt(0).Name)
-            </tbody>
-        </table>
-
-        <button id="createtag" style="margin-top: 4px;" type="button" class="btn btn-primary">Create tag</button>*@
     </div>
 </div>
 
+<style>
+    .lineContainer {
+        overflow: hidden;
+    }
 
+        .lineContainer div {
+        }
 
-<div>
-    <a asp-action="Index">Back to homepage</a>
-</div>
+    .left {
+        width: 200px;
+        float: left;
+        vertical-align: central;
+    }
 
+    .right {
+        overflow: hidden;
+        vertical-align: central;
+    }
+</style>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            $("input[id$='addtags']").click(function () {
-                document.getElementById('usertags').style.display = 'block';
-                $("input[id$='linkurl']").attr("disabled", "disabled");
-                var url = $('#linkUrl').val();
-                $.ajax({
-                    url: '/Home/TagsPartial',
-                    data: { linkUrl: url },
-                    contentType: 'application/html; charset=utf-8',
-                    type: 'GET',
-                    dataType: 'html'
-                })
-                    .success(function (result) {
-                        $('#usertags').html(result);
-                    })
-                    .error(function (xhr, status) {
-                        alert(status);
-                    });
-            });
-        });
-        $(document).ready(function () {
-            $("input[id$='hidetags']").click(function () {
-                document.getElementById('usertags').style.display = 'none';
-                $("input[id$='linkurl']").removeAttr("disabled");
-            });
-        });
-        $('#createtag').click(function () {
-            var url = $('#tagName').val();
+
+        $("#btnAdd").on('click', function () {
             $.ajax({
-                url: 'CreateTag',
-                data: {tagName :"fwafwa", linkId : "1234" },
-                cache: false,
-                success: function (data) {
-                    $('#Table > tbody').append(data);
-                },
-                error: function (a, b, c) {
-                    alert(a + " " + b + " " + c);
+                async: true,
+                data: $('#createform').serialize(),
+                type: "POST",
+                url: '/Home/AddTag',
+                success: function (partialView) {
+                    $('#tagItemsContainer').html(partialView);
                 }
             });
         });
+
+
+        $('#addtag').on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Home/AddTag'
+            }).success(function (partialView) {
+                $('#new-Tag').html(partialView);
+            });
+        });
+
+        $("#deleteRow").live("click", function () {
+            $(this).parents("#tagRow:first").remove();
+            return false;
+        });
+
+        function SubmitMyForm() {
+            document.getElementById("createform").submit();
+        }
+
+        function ShowTags() {
+
+            if (document.getElementById('linkUrl').value === "") {
+                document.getElementById('valmsg').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('valmsg').style.display = 'none';
+
+            document.getElementById('tagItemsContainer').style.display = 'block';
+            document.getElementById('addtagbutton').style.display = 'block';
+            $("input[id$='linkUrl']").attr("disabled", "disabled");
+        }
+
+        function HideTags() {
+            document.getElementById('tagItemsContainer').style.display = 'none';
+            document.getElementById('addtagbutton').style.display = 'none';
+
+            $("input[id$='linkUrl']").removeAttr("disabled");
+        }
+
+
+
     </script>
 }

@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Tags partial";
 }
-<table id="Table">
+@*<table id="Table">
     <tbody>
         @Html.EditorFor(x => x.Name)
     </tbody>
@@ -11,16 +11,35 @@
 
 
 @Html.ActionLink(
-    "Create tag",                                                 
-    "CreateTag",                                  
-    "Home",                                                 
+    "Create tag",
+    "CreateTag",
+    "Home",
     new
-    {                                                   
+    {
         TagName = Model.Name,
         LinkId = Model.ID
     },
-    null                                                    
-)
+    null
+)*@
+
+<h1>Add tag</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input id="linkUrl" asp-for="Name" class="form-control" placeholder="URL" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                @Html.ActionLink("Add tag", "CreateTag", "Home", null, new { TagName = Model.Name, LinkId = Model.ID , @class = "btn btn-success" })
+            </div>   
+    </div>
+</div>
+
 
 <script>
       //$('#createtag').click(function () {
