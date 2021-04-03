@@ -118,62 +118,66 @@ namespace Userspace.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var createdLink = await _linkService.CreateLink(model);
+                    if(createdLink == null)
+                    {
+                        ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                    }
                     return RedirectToAction("Index");
                 }
                 else
                 {
                     model.TagResources.Clear();
-                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. Each link must have at least one tag associated with it.";
+                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
                 }
             }
             return View(model);
         }
 
-    public async Task<ActionResult> CreateTag(TagPartial model)
-    {
-        await _tagService.CreateTag(new TagResource { LinkId = Convert.ToInt32(model.LinkId), Name = model.TagName });
-
-        //.. allow adding more tags
-
-        return RedirectToAction("Index");
-    }
-    [HttpGet]
-    public async Task<ActionResult> TagsCreate(LinkResource model)
-    {
-        return View(model);
-    }
-    public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
-    {
-
-        //ModelState.IsValid;
-
-        var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
-        if (linkOccurance != null)
+        public async Task<ActionResult> CreateTag(TagPartial model)
         {
-            var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
-            if (response != null && response.Any())
-            {
-                model.TagResources = new List<TagResource>(response);
-            }
-        }
-        model.TagResources.Add(new TagResource());
-        return PartialView("TagRow", model);
-    }
+            await _tagService.CreateTag(new TagResource { LinkId = Convert.ToInt32(model.LinkId), Name = model.TagName });
 
-    public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource model)
-    {
-        model.TagResources.Add(new TagResource());
-        return PartialView("TagRow", model);
+
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public async Task<ActionResult> TagsCreate(LinkResource model)
+        {
+            return View(model);
+        }
+        public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
+        {
+
+            //ModelState.IsValid;
+
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
+            if (linkOccurance != null)
+            {
+                var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
+                if (response != null && response.Any())
+                {
+                    model.TagResources = new List<TagResource>(response);
+                }
+            }
+            model.TagResources.Add(new TagResource());
+            return PartialView("TagRow", model);
+        }
+
+        public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource model)
+        {
+            model.TagResources.Add(new TagResource());
+            return PartialView("TagRow", model);
+        }
+        public async Task<ActionResult> ClearTags([Bind("Name, TagResources")] LinkResource model)
+        {
+            if(model.TagResources!=null)
+            model.TagResources.Clear();
+            return View("TagRow", model);
+        }
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
-    public async Task<ActionResult> ClearTags([Bind("Name, TagResources")] LinkResource model)
-    {
-        model.TagResources.Clear();
-        return View("TagRow", model);
-    }
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
-}
 }

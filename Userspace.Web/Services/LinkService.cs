@@ -81,7 +81,7 @@ namespace Userspace.Web.Services
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                return null;
             }
         }
         public Task<LinkViewModel> GetLinkById(int id)
