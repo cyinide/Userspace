@@ -36,5 +36,10 @@ namespace Userspace.Services.Services
             return await _unitOfWork.Tags
                 .GetTagsByLinkIdAsync(id);
         }
+        public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkId(int linkId)
+        {
+            return await _unitOfWork.Tags
+                .GetTagsByOccurancesAndLinkIdAsync(linkId);
+        }
     }
 }
