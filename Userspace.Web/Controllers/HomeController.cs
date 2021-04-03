@@ -109,24 +109,19 @@ namespace Userspace.Web.Controllers
             ViewBag.Message = string.Format("User signed in.");
             return RedirectToAction("Login");
         }
-        //[HttpGet]
-        //public async Task<ActionResult> Create()
-        //{
-        //    return View();
-        //}
-
         [AllowAnonymous]
-        public async Task<ActionResult> Create([Bind("Name,  TagResources")] LinkResource model)
+        public async Task<ActionResult> Create([Bind("Name, TagResources")] LinkResource model)
         {
+
             if (!String.IsNullOrEmpty(model.Name))
             {
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ErrorMessage = "Each link must have at least one tag associated with it.";
+                    return View(model);
+                }
                 var createdLink = await _linkService.CreateLink(model);
-                if (createdLink.ID != 0)
-                    //    return RedirectToAction("TagsCreate", createdLink);
-                    ////prompt message
-                    //return RedirectToAction("TagsPartial", createdLink);
-
-                    return RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
 
             return View(model);
@@ -144,10 +139,31 @@ namespace Userspace.Web.Controllers
         {
             return View(model);
         }
-        public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource link)
+        public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource model)
         {
-            link.TagResources.Add(new TagResource());
-            return PartialView("TagRow", link);
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
+            if (linkOccurance != null)
+            {
+                var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
+                if (response != null && response.Any())
+                {
+                    model.TagResources = new List<TagResource>(response.ToList());
+                    var mv = new ModelVariables();
+                    mv.LinkId = model.ID;
+                    mv.TagName = model.Name;
+                    mv.Options = model.TagResources.Select(x =>
+                    new SelectListItem
+                    {
+                        Value = x.ID.ToString(),
+                        Text = x.Name
+                    }).ToList();
+
+                    return View("TagsPartial", mv);
+                }
+            }
+
+            model.TagResources.Add(new TagResource());
+            return PartialView("TagRow", model);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

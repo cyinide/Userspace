@@ -49,9 +49,9 @@
                         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "badge badge-danger" })
                     </div>
                     <div class="form-group">
-                        <label style="font-size:0.7em;" class="badge badge-danger">
+                        <label style="font-size:0.7em;" class="text-danger">
                             Password must have at least one special character and one upper case letter.<br/>
-                            Email must be in 'abc@email.abc' format.
+                            Email must be in text@email.abc format.
                         </label>
                         <input type="submit" name="submit" class="btn btn-danger" asp-area="" asp-controller="Home" asp-action="Register" value="Register" />
                     </div>

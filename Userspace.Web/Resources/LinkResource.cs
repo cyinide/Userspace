@@ -11,7 +11,6 @@ namespace Userspace.Web.Resources
         public LinkResource()
         {
             TagResources = new List<TagResource>();
-            TagResources.Add(new TagResource { Name = "" }); // initial tag input - each link must have at least one tag
         }
         public int ID { get; set; }
         [Required]

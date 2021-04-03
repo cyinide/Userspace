@@ -9,12 +9,14 @@
         <h2>Create link</h2>
     </div>
     <div class="right" style="text-align:end">
-        <input type="submit" value="Create" onclick="SubmitMyForm()" class="btn btn-primary" />
+        <input type="submit" value="Submit" onclick="SubmitMyForm()" class="btn btn-primary" />
     </div>
 </div>
 
 <hr />
-
+<div >
+    <label class="text-danger">@ViewBag.ErrorMessage</label>
+</div>
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create" id="createform">
@@ -36,13 +38,13 @@
             </div>
             <div class="row" id="addtagbutton" style="display:none">
                 <div class="col-md-4">
-                    <input class="btn btn-info" type="button" id="btnAdd" value="Add tag" />
+                    <input class="btn btn-info" type="button" id="btnAdd" value="Add another tag" />
                 </div>
             </div>
 
         </form>
         <div>
-            <a asp-action="Index">Back to homepage</a>
+            <br /><a asp-action="Index">Back to homepage</a>
         </div>
     </div>
 </div>
@@ -71,7 +73,7 @@
     <script type="text/javascript">
 
 
-        $("#btnAdd").on('click', function () {
+        $("#addtags").on('click', function () {
             $.ajax({
                 async: true,
                 data: $('#createform').serialize(),
@@ -83,6 +85,17 @@
             });
         });
 
+        $("#btnAdd").on('click', function () {
+            $.ajax({
+                async: true,
+                data: $('#createform').serialize(),
+                type: "POST",
+                url: '/Home/AddTag',
+                success: function (partialView) {
+                    $('#tagItemsContainer').html(partialView);
+                }
+            });
+        });
 
         $('#addtag').on('click', function () {
             $.ajax({
@@ -99,6 +112,11 @@
         });
 
         function SubmitMyForm() {
+            if (document.getElementById('linkUrl').value === "") {
+                document.getElementById('valmsg').style.display = 'block';
+                return;
+            }
+
             document.getElementById("createform").submit();
         }
 
@@ -113,14 +131,14 @@
 
             document.getElementById('tagItemsContainer').style.display = 'block';
             document.getElementById('addtagbutton').style.display = 'block';
-            $("input[id$='linkUrl']").attr("disabled", "disabled");
+            document.getElementById('linkUrl').readOnly = true;
         }
 
         function HideTags() {
             document.getElementById('tagItemsContainer').style.display = 'none';
             document.getElementById('addtagbutton').style.display = 'none';
 
-            $("input[id$='linkUrl']").removeAttr("disabled");
+            document.getElementById('linkUrl').readOnly = false;
         }
 
 
