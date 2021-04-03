@@ -24,16 +24,14 @@ namespace Userspace.Web.Services
             _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
         }
-        public async Task<IEnumerable<TagViewModel>> GetTags()
+        public async Task<IEnumerable<TagResource>> GetTags()
         {
             try
             {
-                List<TagViewModel> tags = new List<TagViewModel>();
-
+                List<TagResource> tags = new List<TagResource>();
                 var response = await _httpClient.GetAsync(tagsUrl);
                 string apiResponse = await response.Content.ReadAsStringAsync();
-
-                tags = JsonConvert.DeserializeObject<List<TagViewModel>>(apiResponse);
+                tags = JsonConvert.DeserializeObject<List<TagResource>>(apiResponse);
                 return tags;
             }
             catch (Exception)
@@ -46,10 +44,8 @@ namespace Userspace.Web.Services
             try
             {
                 List<TagResource> tags = new List<TagResource>();
-
                 var response = await _httpClient.GetAsync(tagsUrl+ "/bylinkid/" + linkId);
                 string apiResponse = await response.Content.ReadAsStringAsync();
-
                 tags = JsonConvert.DeserializeObject<List<TagResource>>(apiResponse);
                 return tags;
             }
@@ -68,9 +64,7 @@ namespace Userspace.Web.Services
             {
                 var obj = JsonConvert.SerializeObject(tag);
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
-
                 var response = await _httpClient.PostAsync(tagsUrl, stringContent);
-
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var createdTag = JsonConvert.DeserializeObject<TagResource>(apiResponse);
 
@@ -79,6 +73,21 @@ namespace Userspace.Web.Services
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(tagsUrl + "/gettagsbyOccurancesAndLinkid/" + linkId);
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                var tags = JsonConvert.DeserializeObject<List<Tuple<string, int>>>(apiResponse);
+                return tags;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
             }
         }
     }

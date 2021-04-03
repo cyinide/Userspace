@@ -43,6 +43,13 @@ namespace Userspace.Web.Controllers
             return View(tags);
         }
         [HttpGet]
+        public async Task<IActionResult> TagsByLink(int linkId)
+        {
+            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
+            var tags = await _tagService.GetTagsByLinkId(linkId);
+            return View("Tags", tags);
+        }
+        [HttpGet]
         public async Task<IActionResult> TagsPartial(LinkResource model)
         {
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
@@ -118,7 +125,7 @@ namespace Userspace.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     var createdLink = await _linkService.CreateLink(model);
-                    if(createdLink == null)
+                    if (createdLink == null)
                     {
                         ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
                     }
@@ -136,8 +143,6 @@ namespace Userspace.Web.Controllers
         public async Task<ActionResult> CreateTag(TagPartial model)
         {
             await _tagService.CreateTag(new TagResource { LinkId = Convert.ToInt32(model.LinkId), Name = model.TagName });
-
-
             return RedirectToAction("Index");
         }
         [HttpGet]
@@ -147,17 +152,20 @@ namespace Userspace.Web.Controllers
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {
-
             //ModelState.IsValid;
 
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
             {
-                var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
-                if (response != null && response.Any())
+                var tagsWithOccurances = await _tagService.GetTagsByOccurancesAndLinkIdAsync(linkOccurance.ID);
+                if (tagsWithOccurances != null && tagsWithOccurances.Any())
                 {
-                    model.TagResources = new List<TagResource>(response);
-                }
+                    model.TagResources = new List<TagResource>();
+                    foreach (var item in tagsWithOccurances)
+                    {
+                        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = item.Item2 });
+                    }
+                }                          
             }
             model.TagResources.Add(new TagResource());
             return PartialView("TagRow", model);
@@ -170,8 +178,8 @@ namespace Userspace.Web.Controllers
         }
         public async Task<ActionResult> ClearTags([Bind("Name, TagResources")] LinkResource model)
         {
-            if(model.TagResources!=null)
-            model.TagResources.Clear();
+            if (model.TagResources != null)
+                model.TagResources.Clear();
             return View("TagRow", model);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -4,9 +4,12 @@
     <div class="col-md-4">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group" style="width:240px">
-                 <label asp-for="Name" class="control-label"></label>
-                 <input asp-for="Name" class="form-control" placeholder="Tag name" />
-                 <span asp-validation-for="Name" style="font-size:xx-small;" class="text-danger"></span>
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="New tag" />
+            <span asp-validation-for="Name" style="font-size:xx-small;" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input asp-for="NumberOfOccurances" readonly style="border: none;border-width:0px;outline:none;font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:cadetblue" />
         </div>
     </div>
 </div>

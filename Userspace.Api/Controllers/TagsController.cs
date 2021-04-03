@@ -73,6 +73,16 @@ namespace Userspace.Api.Controllers
 
             return Ok(tagResources);
         }
+        // GET: api/links/gettagsbyOccurancesAndLinkid/linkId
+        [HttpGet("gettagsbyOccurancesAndLinkid/{linkId}")]
+        public async Task<ActionResult<List<Tuple<string, int>>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
+        {
+            var tags = await _tagService.GetTagsByOccurancesAndLinkId(linkId);
+            if (tags == null)
+                return NotFound();
+
+            return Ok(tags);
+        }
     }
 }
 
