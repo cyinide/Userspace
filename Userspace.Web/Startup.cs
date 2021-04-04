@@ -63,7 +63,7 @@ namespace Userspace.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Links}/{action=Login}/{id?}");
+                    pattern: "{controller=Links}/{action=Register}/{id?}");
             });
         }
     }
