@@ -57,13 +57,11 @@ namespace Userspace.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ErrorMessage = "Incorrect username or password.";
                 return RedirectToAction("Login");
             }
             var result = await _authService.Login(model);
             if (!result)
             {
-                ViewBag.ErrorMessage = "Incorrect username or password.";
                 return RedirectToAction("Login");
             }
             return RedirectToAction("Home");
