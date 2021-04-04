@@ -27,6 +27,7 @@ namespace Userspace.Web.Controllers
         public ILinkService _linkService { get; private set; }
         public ITagService _tagService { get; private set; }
         public IAuthService _authService { get; private set; }
+
         public LinksController(IAuthService authService, ILinkService linkService, ITagService tagService)
         {
             _linkService = linkService;
@@ -94,11 +95,15 @@ namespace Userspace.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    if(model.TagResources == null || !model.TagResources.Any())
+                    {
+                        ViewBag.ErrorMessage = Settings.ErrorMessage;
+                        return View(model);
+                    }
                     var createdLink = await _linkService.CreateLink(model);
                     if (createdLink == null)
                     {
-                        ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
-                            "Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                        ViewBag.ErrorMessage = Settings.ErrorMessage;
                         return View(model);
                     }
                     var contentTags = StripHtml(createdLink);
@@ -114,8 +119,7 @@ namespace Userspace.Web.Controllers
                 else
                 {
                     model.TagResources.Clear();
-                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
-                        "Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                    ViewBag.ErrorMessage = Settings.ErrorMessage;
                 }
             }
             return View(model);
@@ -127,7 +131,7 @@ namespace Userspace.Web.Controllers
             {
                 List<TagResource> tagResourcesForSuggestion = new List<TagResource>();
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(link.Name);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://" + link.Name);
                 request.AutomaticDecompression = DecompressionMethods.GZip;
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
