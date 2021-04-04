@@ -93,14 +93,16 @@ namespace Userspace.Web.Controllers
                     var createdLink = await _linkService.CreateLink(model);
                     if (createdLink == null)
                     {
-                        ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                        ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
+                            "Link must have at least one tag associated with it. User cannot add same link multiple times.";
                     }
                     return RedirectToAction("Home");
                 }
                 else
                 {
                     model.TagResources.Clear();
-                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
+                        "Link must have at least one tag associated with it. User cannot add same link multiple times.";
                 }
             }
             return View(model);
@@ -116,7 +118,10 @@ namespace Userspace.Web.Controllers
                     model.TagResources = new List<TagResource>();
                     foreach (var item in tagsWithOccurances)
                     {
-                        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = item.Item2 });
+                        if (item.Item2 == 1)
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once." });
+                        else
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times." });
                     }
                 }
             }
