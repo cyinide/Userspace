@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -10,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using StopWord;
+using Userspace.Web.Extensions;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Models.Auth;
@@ -69,6 +73,31 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
+            string siteContent = "";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.com");
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream responseStream = response.GetResponseStream())
+            using (StreamReader streamReader = new StreamReader(responseStream))
+            {
+                siteContent = streamReader.ReadToEnd();
+            }
+
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(siteContent);
+            if (doc == null) return null;
+
+            string output = "";
+            foreach (var node in doc.DocumentNode.ChildNodes)
+            {
+                output += node.InnerText;
+            }
+
+            var result = output.RemoveStopWords("en");
+            result = result.RemoveSpecialCharacters();
+
             return View();
         }
         [HttpPost]
@@ -95,6 +124,10 @@ namespace Userspace.Web.Controllers
                         ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
                             "Link must have at least one tag associated with it. User cannot add same link multiple times.";
                     }
+
+                    var additionalTags = await StripHtml(model);
+                    //add tags 
+
                     return RedirectToAction("Home");
                 }
                 else
@@ -105,6 +138,55 @@ namespace Userspace.Web.Controllers
                 }
             }
             return View(model);
+        }
+
+
+        protected async Task<List<TagResource>> StripHtml(LinkResource link)
+        {
+            string siteContent = string.Empty;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(link.Name);
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (StreamReader streamReader = new StreamReader(responseStream))
+                {
+                    siteContent = streamReader.ReadToEnd();
+                }
+
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(siteContent);
+                if (doc == null) return null;
+
+                string output = "";
+                foreach (var node in doc.DocumentNode.ChildNodes)
+                {
+                    output += node.InnerText;
+                }
+
+                output.RemoveStopWords("en");
+                output.RemoveSpecialCharacters();
+
+                return null;
+
+            }
+            catch(Exception)
+            {
+                return null; //not possible to parse the provided URL
+
+                //using (WebResponse response = e.Response)
+                //{
+                //    HttpWebResponse httpResponse = (HttpWebResponse)response;
+                //    using (Stream data = response.GetResponseStream())
+                //    using (var reader = new StreamReader(data))
+                //    {
+                //        string text = reader.ReadToEnd();
+                //        Console.WriteLine(text);
+                //    }
+                //}
+            }
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Userspace.Api.Extensions
 {
-    public static class LocalExtensions
+    public static class StringExtensions
     {
         public static string StringConcatenate(this IEnumerable<string> source, string separator)
         {
