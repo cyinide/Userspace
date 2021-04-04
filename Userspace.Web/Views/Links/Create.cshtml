@@ -22,12 +22,12 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input id="linkUrl" asp-for="Name" style="width:400px" class="form-control" placeholder="URL" />
+                <input id="linkUrl" asp-for="Name" onchange="UrlChanged()" style="width:400px" class="form-control" placeholder="URL" />
                 <span id="valmsg" style="display:none" asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="button" id="addtags" value="Show tags" onclick="ShowTags()" class="btn btn-success" />
-                <input type="button" id="hidetags" value="Remove tags" onclick="HideTags()" class="btn btn-primary" />
+                <input type="button" id="hidetags" value="Clear tags" onclick="HideTags()" class="btn btn-primary" />
             </div>
             <div id="tagItemsContainer" style="display:none">
                 @Html.EditorFor(Model => Model.TagResources)
@@ -63,18 +63,57 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script type="text/javascript">
 
-        $("#addtags").on('click', function () {
-            $.ajax({
-                async: true,
-                data: $('#createform').serialize(),
-                type: "POST",
-                url: '/Links/InitializeTags',
-                success: function (partialView) {
-                    $('#tagItemsContainer').html(partialView);
-                }
-            });
-        });
+        var callOne = true;
 
+        window.onload = function () {
+            this.callOne = true;
+        };
+
+        function UrlChanged() {
+            callOne = true;
+        }
+
+        function ShowTags() {
+            if (callOne) {
+                $.ajax({
+                    async: true,
+                    data: $('#createform').serialize(),
+                    type: "POST",
+                    url: '/Links/InitializeTags',
+                    success: function (partialView) {
+                        $('#tagItemsContainer').html(partialView);
+                    }
+                });
+                callOne = false;
+            }
+            else {
+                $.ajax({
+                    async: true,
+                    data: $('#createform').serialize(),
+                    type: "POST",
+                    url: '/Links/AddTag',
+                    success: function (partialView) {
+                        this.url = '/Links/AddTag';
+                        $('#tagItemsContainer').html(partialView);
+                    }
+                });
+            }
+
+            if (document.getElementById('linkUrl').value === "") {
+                document.getElementById('valmsg').style.display = 'block';
+                return;
+            }
+            document.getElementById('valmsg').style.display = 'none';
+            document.getElementById('tagItemsContainer').style.display = 'block';
+            document.getElementById('addtagbutton').style.display = 'block';
+            document.getElementById('linkUrl').readOnly = true;
+        }
+
+        function HideTags() {
+            document.getElementById('tagItemsContainer').style.display = 'none';
+            document.getElementById('addtagbutton').style.display = 'none';
+            document.getElementById('linkUrl').readOnly = false;
+        }
         $("#hidetags").on('click', function () {
             $.ajax({
                 async: true,
@@ -116,24 +155,6 @@
 
             document.getElementById('valmsg').style.display = 'none';
             document.getElementById("createform").submit();
-        }
-
-        function ShowTags() {
-
-            if (document.getElementById('linkUrl').value === "") {
-                document.getElementById('valmsg').style.display = 'block';
-                return;
-            }
-            document.getElementById('valmsg').style.display = 'none';
-            document.getElementById('tagItemsContainer').style.display = 'block';
-            document.getElementById('addtagbutton').style.display = 'block';
-            document.getElementById('linkUrl').readOnly = true;
-        }
-
-        function HideTags() {
-            document.getElementById('tagItemsContainer').style.display = 'none';
-            document.getElementById('addtagbutton').style.display = 'none';
-            document.getElementById('linkUrl').readOnly = false;
-        }
+        }      
     </script>
 }

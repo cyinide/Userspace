@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +13,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using StopWord;
+using Userspace.Web.Extensions;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Models.Auth;
@@ -22,6 +27,7 @@ namespace Userspace.Web.Controllers
         public ILinkService _linkService { get; private set; }
         public ITagService _tagService { get; private set; }
         public IAuthService _authService { get; private set; }
+
         public LinksController(IAuthService authService, ILinkService linkService, ITagService tagService)
         {
             _linkService = linkService;
@@ -89,22 +95,86 @@ namespace Userspace.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    if(model.TagResources == null || !model.TagResources.Any())
+                    {
+                        ViewBag.ErrorMessage = Settings.ErrorMessage;
+                        return View(model);
+                    }
                     var createdLink = await _linkService.CreateLink(model);
                     if (createdLink == null)
                     {
-                        ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
-                            "Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                        ViewBag.ErrorMessage = Settings.ErrorMessage;
+                        return View(model);
+                    }
+                    var contentTags = StripHtml(createdLink);
+                    if (contentTags != null && contentTags.Any())
+                    {
+                        foreach (var item in contentTags)//TODO: CreateTagRange
+                        {
+                           await _tagService.CreateTag(item); 
+                        }
                     }
                     return RedirectToAction("Home");
                 }
                 else
                 {
                     model.TagResources.Clear();
-                    ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
-                        "Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                    ViewBag.ErrorMessage = Settings.ErrorMessage;
                 }
             }
             return View(model);
+        }
+        protected List<TagResource> StripHtml(LinkResource link)
+        {
+            string siteContent = string.Empty;
+            try
+            {
+                List<TagResource> tagResourcesForSuggestion = new List<TagResource>();
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://" + link.Name);
+                request.AutomaticDecompression = DecompressionMethods.GZip;
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (Stream responseStream = response.GetResponseStream())
+                using (StreamReader streamReader = new StreamReader(responseStream))
+                {
+                    siteContent = streamReader.ReadToEnd();
+                }
+
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.OptionWriteEmptyNodes = true;
+                doc.LoadHtml(siteContent);
+                if (doc == null) return null;
+                string output = "";
+                foreach (var node in doc.DocumentNode.ChildNodes)
+                {
+                    output += node.InnerText;
+                }
+
+                var result = output.RemoveStopWords("en");
+                result = result.RemoveSpecialCharacters();
+                string[] splitkeywords = Regex.Split(result, "(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(?<=\\W)(?=\\W)");
+                splitkeywords = (from x in splitkeywords select x.Trim()).ToArray();
+
+                var groupedkeywords = splitkeywords.GroupBy(split => split)
+                    .Select(g => new { Keyword = g.Key, Count = g.Count() });
+
+                var sortedkeywords = groupedkeywords.OrderByDescending(x => x.Count).ThenBy(X => X.Keyword).ToList();
+
+                var count = sortedkeywords.Count() > 10 ? 10 : sortedkeywords.Count() - 1;
+
+                foreach (var item in sortedkeywords.GetRange(0, count))
+                {
+                    if (item.Count > 2)
+                        tagResourcesForSuggestion.Add(new TagResource { Name = item.Keyword, NumberOfOccurances = "Occured " + item.Count + " times.", LinkId = link.ID });
+                }
+
+                return tagResourcesForSuggestion;
+            }
+            catch (Exception)
+            {
+                return null; //not possible to parse the provided URL
+            }
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {
@@ -118,9 +188,9 @@ namespace Userspace.Web.Controllers
                     foreach (var item in tagsWithOccurances)
                     {
                         if (item.Item2 == 1)
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once." });
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
                         else
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times." });
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
                     }
                 }
             }
