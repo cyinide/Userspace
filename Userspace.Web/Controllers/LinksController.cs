@@ -31,21 +31,18 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
-            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var links = await _linkService.GetLinks(Settings.CurrentUserId);
             return View(links);
         }
         [HttpGet]
         public async Task<IActionResult> Tags()
         {
-            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var tags = await _tagService.GetTags();
             return View(tags);
         }
         [HttpGet]
         public async Task<IActionResult> TagsByLink(int linkId)
         {
-            TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var tags = await _tagService.GetTagsByLinkId(linkId);
             return View("Tags", tags);
         }
@@ -59,10 +56,14 @@ namespace Userspace.Web.Controllers
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Incorrect username or password.";
                 return RedirectToAction("Login");
+            }
             var result = await _authService.Login(model);
             if (!result)
             {
+                ViewBag.ErrorMessage = "Incorrect username or password.";
                 return RedirectToAction("Login");
             }
             return RedirectToAction("Home");
@@ -82,7 +83,7 @@ namespace Userspace.Web.Controllers
             {
                 return RedirectToAction("Register");
             }
-            return RedirectToAction("Home");
+            return RedirectToAction("Login");
         }
         public async Task<ActionResult> Create([Bind("Name, TagResources")] LinkResource model)
         {
@@ -141,6 +142,12 @@ namespace Userspace.Web.Controllers
                 model.TagResources.Clear();
 
             return View("TagRow", model);
+        }
+        public ActionResult Logout()
+        {
+            Settings.CurrentUserId = String.Empty;
+            Settings.CurrentUserName = String.Empty;
+            return View("Login");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

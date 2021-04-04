@@ -8,8 +8,7 @@ namespace Userspace.Web.Models.Auth
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email must be in correct format")]
-        [EmailAddress]
+        [Required(ErrorMessage = "This field required")]
         public string Email { get; set; }
         [Required(ErrorMessage = "This field is required")]
         [DataType(DataType.Password)]
