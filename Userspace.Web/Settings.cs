@@ -11,8 +11,13 @@ namespace Userspace.Web
         public static string CurrentUserId = "";
         public static string JwtToken = "";
     }
-
     public class ApiEndpoint
+    {
+        public string AuthEndpointUrl { get; set; }
+        public string LinksEndpointUrl { get; set; }
+        public string TagsEndpointUrl { get; set; }
+    }
+    public class ApiEndpointLocal
     {
         public string AuthEndpointUrl { get; set; }
         public string LinksEndpointUrl { get; set; }

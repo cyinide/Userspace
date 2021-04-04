@@ -17,7 +17,7 @@ namespace Userspace.Web.Services
     {
         public HttpClient _httpClient { get; set; }
         private string authUrl;
-        public AuthService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
+        public AuthService(IHttpClientFactory httpClientFactory, ApiEndpointLocal apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
             authUrl = apiEndpoint.AuthEndpointUrl;

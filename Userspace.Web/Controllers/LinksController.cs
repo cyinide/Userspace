@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -73,31 +74,6 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public ActionResult Register()
         {
-            string siteContent = "";
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.com");
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream responseStream = response.GetResponseStream())
-            using (StreamReader streamReader = new StreamReader(responseStream))
-            {
-                siteContent = streamReader.ReadToEnd();
-            }
-
-            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-            doc.LoadHtml(siteContent);
-            if (doc == null) return null;
-
-            string output = "";
-            foreach (var node in doc.DocumentNode.ChildNodes)
-            {
-                output += node.InnerText;
-            }
-
-            var result = output.RemoveStopWords("en");
-            result = result.RemoveSpecialCharacters();
-
             return View();
         }
         [HttpPost]
@@ -123,11 +99,16 @@ namespace Userspace.Web.Controllers
                     {
                         ViewBag.ErrorMessage = "Each link - tag relation must have a value. " +
                             "Link must have at least one tag associated with it. User cannot add same link multiple times.";
+                        return View(model);
                     }
-
-                    var additionalTags = await StripHtml(model);
-                    //add tags 
-
+                    var contentTags = StripHtml(createdLink);
+                    if (contentTags != null && contentTags.Any())
+                    {
+                        foreach (var item in contentTags)//TODO: CreateTagRange
+                        {
+                           await _tagService.CreateTag(item); 
+                        }
+                    }
                     return RedirectToAction("Home");
                 }
                 else
@@ -139,14 +120,14 @@ namespace Userspace.Web.Controllers
             }
             return View(model);
         }
-
-
-        protected async Task<List<TagResource>> StripHtml(LinkResource link)
+        protected List<TagResource> StripHtml(LinkResource link)
         {
             string siteContent = string.Empty;
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(link.Name);
+                List<TagResource> tagResourcesForSuggestion = new List<TagResource>();
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.com");
                 request.AutomaticDecompression = DecompressionMethods.GZip;
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -157,35 +138,38 @@ namespace Userspace.Web.Controllers
                 }
 
                 HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.OptionWriteEmptyNodes = true;
                 doc.LoadHtml(siteContent);
                 if (doc == null) return null;
-
                 string output = "";
                 foreach (var node in doc.DocumentNode.ChildNodes)
                 {
                     output += node.InnerText;
                 }
 
-                output.RemoveStopWords("en");
-                output.RemoveSpecialCharacters();
+                var result = output.RemoveStopWords("en");
+                result = result.RemoveSpecialCharacters();
+                string[] splitkeywords = Regex.Split(result, "(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(?<=\\W)(?=\\W)");
+                splitkeywords = (from x in splitkeywords select x.Trim()).ToArray();
 
-                return null;
+                var groupedkeywords = splitkeywords.GroupBy(split => split)
+                    .Select(g => new { Keyword = g.Key, Count = g.Count() });
 
+                var sortedkeywords = groupedkeywords.OrderByDescending(x => x.Count).ThenBy(X => X.Keyword).ToList();
+
+                var count = sortedkeywords.Count() > 10 ? 10 : sortedkeywords.Count() - 1;
+
+                foreach (var item in sortedkeywords.GetRange(0, count))
+                {
+                    if (item.Count > 2)
+                        tagResourcesForSuggestion.Add(new TagResource { Name = item.Keyword, NumberOfOccurances = "Occured " + item.Count + " times.", LinkId = link.ID });
+                }
+
+                return tagResourcesForSuggestion;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null; //not possible to parse the provided URL
-
-                //using (WebResponse response = e.Response)
-                //{
-                //    HttpWebResponse httpResponse = (HttpWebResponse)response;
-                //    using (Stream data = response.GetResponseStream())
-                //    using (var reader = new StreamReader(data))
-                //    {
-                //        string text = reader.ReadToEnd();
-                //        Console.WriteLine(text);
-                //    }
-                //}
             }
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
@@ -200,9 +184,9 @@ namespace Userspace.Web.Controllers
                     foreach (var item in tagsWithOccurances)
                     {
                         if (item.Item2 == 1)
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once." });
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
                         else
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times." });
+                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
                     }
                 }
             }
