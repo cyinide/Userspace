@@ -8,15 +8,16 @@ namespace Userspace.Web.Models.Auth
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         public string Username { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Email must be in correct format")]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         public string FirstName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         public string LastName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }

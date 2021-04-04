@@ -20,7 +20,6 @@ namespace Userspace.Data.Repositories
                 .Where(x => x.ID == linkId)
                     .SingleOrDefaultAsync();
         }
-        //refactor based on DRY principles
         public async Task<Link> CheckForLinkOccuranceAsync(string name) 
         {
             string string1 = name.Replace("%2F","/");

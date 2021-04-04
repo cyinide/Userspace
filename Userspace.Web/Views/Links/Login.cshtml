@@ -12,7 +12,7 @@
                 Login
             </div>
             <div class="card-body">
-                @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+                @using (Html.BeginForm("Login", "Links", FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
                     <div class="form-group">
@@ -26,7 +26,7 @@
                         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "badge badge-danger" })
                     </div>
                     <div class="form-group">
-                        <input type="submit" name="submit" class="btn btn-primary"  asp-area="" asp-controller="Home" asp-action="Login" value="Login" />
+                        <input type="submit" name="submit" class="btn btn-primary" asp-area="" asp-controller="Links" asp-action="Login" value="Login" />
                     </div>
                 }
             </div>

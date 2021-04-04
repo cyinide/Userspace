@@ -18,11 +18,11 @@ namespace Userspace.Web.Services
     public class LinkService : ILinkService
     {
         public HttpClient _httpClient { get; set; }
-        const string linksUrl = "https://localhost:44331/api/Links";
-
-        public LinkService(IHttpClientFactory httpClientFactory)
+        private string linksUrl;
+        public LinkService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
+             linksUrl = apiEndpoint.LinksEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
         }
@@ -38,8 +38,8 @@ namespace Userspace.Web.Services
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     links = JsonConvert.DeserializeObject<List<LinkViewModel>>(apiResponse);
                 }
-                    return links;
-                }
+                return links;
+            }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -51,10 +51,10 @@ namespace Userspace.Web.Services
             try
             {
                 var querystring = Uri.EscapeDataString(name);
-
                 var response = await _httpClient.GetAsync(linksUrl + "/checkforoccurance/" + querystring);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var link = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
+
                 return link;
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace Userspace.Web.Services
             }
         }
         [HttpPost]
-        public async Task<LinkResource> CreateLink(LinkResource link) 
+        public async Task<LinkResource> CreateLink(LinkResource link)
         {
             try
             {
@@ -73,10 +73,11 @@ namespace Userspace.Web.Services
 
                 var response = await _httpClient.PostAsync(linksUrl, stringContent);
                 if (response.StatusCode == HttpStatusCode.NoContent)
-                    return new LinkResource{ Name = link.Name };
+                    return new LinkResource { Name = link.Name };
 
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var createdLink = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
+
                 return createdLink;
             }
             catch (Exception ex)

@@ -16,11 +16,11 @@ namespace Userspace.Web.Services
     public class AuthService : IAuthService
     {
         public HttpClient _httpClient { get; set; }
-        const string authUrl = "https://localhost:44331/api/auth";
-
-        public AuthService(IHttpClientFactory httpClientFactory)
+        private string authUrl;
+        public AuthService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
+            authUrl = apiEndpoint.AuthEndpointUrl;
         }
         public async Task<bool> Login(LoginViewModel model)
         {
@@ -28,9 +28,7 @@ namespace Userspace.Web.Services
             {
                 var obj = JsonConvert.SerializeObject(model);
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
-
                 var result = await _httpClient.PostAsync(authUrl + "/signin", stringContent);
-
                 if (result.IsSuccessStatusCode)
                 {
                     var jwt = await result.Content.ReadAsStringAsync();
@@ -55,7 +53,6 @@ namespace Userspace.Web.Services
             {
                 var obj = JsonConvert.SerializeObject(model);
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
-
                 var result = await _httpClient.PostAsync(authUrl + "/signup", stringContent);
 
                 return result.IsSuccessStatusCode;

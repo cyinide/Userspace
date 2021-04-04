@@ -16,11 +16,11 @@ namespace Userspace.Web.Services
     public class TagService : ITagService
     {
         public HttpClient _httpClient { get; set; }
-        const string tagsUrl = "https://localhost:44331/api/Tags";
-
-        public TagService(IHttpClientFactory httpClientFactory)
+        private string tagsUrl;
+        public TagService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
+             tagsUrl = apiEndpoint.TagsEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
         }
@@ -32,6 +32,7 @@ namespace Userspace.Web.Services
                 var response = await _httpClient.GetAsync(tagsUrl);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 tags = JsonConvert.DeserializeObject<List<TagResource>>(apiResponse);
+
                 return tags;
             }
             catch (Exception)
@@ -47,6 +48,7 @@ namespace Userspace.Web.Services
                 var response = await _httpClient.GetAsync(tagsUrl+ "/bylinkid/" + linkId);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 tags = JsonConvert.DeserializeObject<List<TagResource>>(apiResponse);
+
                 return tags;
             }
             catch (Exception)
@@ -75,14 +77,14 @@ namespace Userspace.Web.Services
                 throw new Exception(ex.Message);
             }
         }
-
-        public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
+      public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
         {
             try
             {
                 var response = await _httpClient.GetAsync(tagsUrl + "/gettagsbyOccurancesAndLinkid/" + linkId);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var tags = JsonConvert.DeserializeObject<List<Tuple<string, int>>>(apiResponse);
+
                 return tags;
             }
             catch (Exception)

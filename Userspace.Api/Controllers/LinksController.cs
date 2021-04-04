@@ -65,7 +65,7 @@ namespace Userspace.Api.Controllers
         public async Task<ActionResult<SaveLinkResource>> CreateLink([FromBody] SaveLinkResource saveLinkResource)
         {
             ClaimsPrincipal currentUser = this.User;
-            if (!currentUser.Claims.Any()) //temporary
+            if (!currentUser.Claims.Any())
                 return Unauthorized(); 
             var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
@@ -84,7 +84,6 @@ namespace Userspace.Api.Controllers
                 await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
                 return NoContent();
             }
-
             var newLink = await _linkService.CreateLink(linkToCreate);
             await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
             var link = await _linkService.GetLinkById(newLink.ID);
@@ -99,7 +98,6 @@ namespace Userspace.Api.Controllers
             var links = await _linkService.GetAllWithTagsAsync();
             if (links == null)
                 return NotFound();
-
             var linkResources = _mapper.Map<IEnumerable<Link>, IEnumerable<LinkResource>>(links);
 
             return Ok(linkResources);
@@ -111,7 +109,6 @@ namespace Userspace.Api.Controllers
             var link = await _linkService.GetWithTagsByIdAsync(id);
             if (link == null)
                 return NotFound();
-
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
             return Ok(linkResource);
@@ -123,7 +120,6 @@ namespace Userspace.Api.Controllers
             var userLinks = await _linkService.GetLinksByUserId(userId);
             if (userLinks == null)
                 return NotFound();
-
             var userLinkResources = _mapper.Map<IEnumerable<UserLink>, IEnumerable<UserLinkResource>>(userLinks);
 
             return Ok(userLinkResources);

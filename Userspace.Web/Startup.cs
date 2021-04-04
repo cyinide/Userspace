@@ -25,9 +25,14 @@ namespace Userspace.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var section = Configuration.GetSection(nameof(ApiEndpoint));
+            var userspaceConfig = section.Get<ApiEndpoint>();
+            services.AddSingleton(userspaceConfig);
+
             services.AddTransient<ILinkService, LinkService>();
             services.AddTransient<ITagService, TagService>();
             services.AddTransient<IAuthService, AuthService>();
+
             services.AddHttpClient<LinkService>();
             services.AddHttpClient<TagService>();
 
@@ -43,7 +48,7 @@ namespace Userspace.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Links/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -58,7 +63,7 @@ namespace Userspace.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Login}/{id?}");
+                    pattern: "{controller=Links}/{action=Login}/{id?}");
             });
         }
     }
