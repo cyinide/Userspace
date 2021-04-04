@@ -5,7 +5,7 @@
 }
 <div class="row justify-content-md-center">
     <div class="col-md-5">
-        @using (Html.BeginForm("Register", "Home", FormMethod.Post))
+        @using (Html.BeginForm("Register", "Links", FormMethod.Post))
         {
             //@Html.ValidationSummary()
             @Html.AntiForgeryToken()
@@ -50,14 +50,13 @@
                     </div>
                     <div class="form-group">
                         <label style="font-size:0.7em;" class="text-danger">
-                            Password must have at least one special character and one upper case letter.<br/>
+                            Password must have at least one special character and one upper case letter.<br />
                             Email must be in text@email.abc format.
                         </label>
-                        <input type="submit" name="submit" class="btn btn-danger" asp-area="" asp-controller="Home" asp-action="Register" value="Register" />
+                        <input type="submit" name="submit" class="btn btn-danger" asp-area="" asp-controller="Links" asp-action="Register" value="Register" />
                     </div>
                 </div>
             </div>
-
         }
     </div>
 </div>

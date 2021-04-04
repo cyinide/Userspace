@@ -50,13 +50,10 @@ namespace Userspace.Api.Controllers
         {
             var validator = new SaveTagResourceValidator();
             var validationResult = await validator.ValidateAsync(saveTagResource);
-
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
-
             var tagToCreate = _mapper.Map<SaveTagResource, Tag>(saveTagResource);
             var newTag = await _tagService.CreateTag(tagToCreate);
-
             var tag = await _tagService.GetTagById(newTag.ID);
             var tagResource = _mapper.Map<Tag, TagResource>(newTag);
 

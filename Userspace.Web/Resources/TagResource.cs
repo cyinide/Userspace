@@ -7,13 +7,7 @@ using System.Threading.Tasks;
 
 namespace Userspace.Web.Resources
 {
-    public class TagPartial
-    {
-        public string TagName { get; set; }
-        public string LinkId { get; set; }
-    }
-
-    public class ModelVariables
+    public class ModelVariables //multiselectlist
     {
         public IEnumerable<SelectListItem> Options { set; get; }
         public string[] SelectedOptions { set; get; }
@@ -21,7 +15,6 @@ namespace Userspace.Web.Resources
         public string TagName { get; set; }
 
     }
-
     public class TagResource
     {
         public int ID { get; set; }

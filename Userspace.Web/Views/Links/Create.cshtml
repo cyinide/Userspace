@@ -12,9 +12,8 @@
         <input type="submit" value="Submit" onclick="SubmitMyForm()" class="btn btn-primary" />
     </div>
 </div>
-
 <hr />
-<div >
+<div>
     <label style="font-size:smaller" class="text-danger">@ViewBag.ErrorMessage</label>
 </div>
 <div class="row">
@@ -26,12 +25,10 @@
                 <input id="linkUrl" asp-for="Name" style="width:400px" class="form-control" placeholder="URL" />
                 <span id="valmsg" style="display:none" asp-validation-for="Name" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <input type="button" id="addtags" value="Show tags" onclick="ShowTags()" class="btn btn-success" />
                 <input type="button" id="hidetags" value="Remove tags" onclick="HideTags()" class="btn btn-primary" />
             </div>
-
             <div id="tagItemsContainer" style="display:none">
                 @Html.EditorFor(Model => Model.TagResources)
             </div>
@@ -40,21 +37,16 @@
                     <input class="btn btn-info" type="button" id="btnAdd" value="Add another tag" />
                 </div>
             </div>
-
         </form>
         <div>
-            <br /><a asp-action="Index">Back to homepage</a>
+            <br /><a asp-action="Home">Back to homepage</a>
         </div>
     </div>
 </div>
-
 <style>
     .lineContainer {
         overflow: hidden;
     }
-
-        .lineContainer div {
-        }
 
     .left {
         width: 200px;
@@ -71,13 +63,12 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script type="text/javascript">
 
-
         $("#addtags").on('click', function () {
             $.ajax({
                 async: true,
                 data: $('#createform').serialize(),
                 type: "POST",
-                url: '/Home/InitializeTags',
+                url: '/Links/InitializeTags',
                 success: function (partialView) {
                     $('#tagItemsContainer').html(partialView);
                 }
@@ -89,7 +80,7 @@
                 async: true,
                 data: $('#createform').serialize(),
                 type: "POST",
-                url: '/Home/ClearTags',
+                url: '/Links/ClearTags',
                 success: function (partialView) {
                     $('#tagItemsContainer').html(partialView);
                 }
@@ -101,7 +92,7 @@
                 async: true,
                 data: $('#createform').serialize(),
                 type: "POST",
-                url: '/Home/AddTag',
+                url: '/Links/AddTag',
                 success: function (partialView) {
                     $('#tagItemsContainer').html(partialView);
                 }
@@ -111,15 +102,10 @@
         $('#addtag').on('click', function () {
             $.ajax({
                 async: false,
-                url: '/Home/AddTag'
+                url: '/Links/AddTag'
             }).success(function (partialView) {
                 $('#new-Tag').html(partialView);
             });
-        });
-
-        $("#deleteRow").live("click", function () {
-            $(this).parents("#tagRow:first").remove();
-            return false;
         });
 
         function SubmitMyForm() {
@@ -138,9 +124,7 @@
                 document.getElementById('valmsg').style.display = 'block';
                 return;
             }
-
             document.getElementById('valmsg').style.display = 'none';
-
             document.getElementById('tagItemsContainer').style.display = 'block';
             document.getElementById('addtagbutton').style.display = 'block';
             document.getElementById('linkUrl').readOnly = true;
@@ -149,11 +133,7 @@
         function HideTags() {
             document.getElementById('tagItemsContainer').style.display = 'none';
             document.getElementById('addtagbutton').style.display = 'none';
-
             document.getElementById('linkUrl').readOnly = false;
         }
-
-
-
     </script>
 }

@@ -17,19 +17,19 @@ using Userspace.Web.Resources;
 
 namespace Userspace.Web.Controllers
 {
-    public class HomeController : Controller
+    public class LinksController : Controller
     {
         public ILinkService _linkService { get; private set; }
         public ITagService _tagService { get; private set; }
         public IAuthService _authService { get; private set; }
-        public HomeController(IAuthService authService, ILinkService linkService, ITagService tagService)
+        public LinksController(IAuthService authService, ILinkService linkService, ITagService tagService)
         {
             _linkService = linkService;
             _tagService = tagService;
             _authService = authService;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Home()
         {
             TempData["Message"] = "Hello, " + Settings.CurrentUserName;
             var links = await _linkService.GetLinks(Settings.CurrentUserId);
@@ -50,32 +50,6 @@ namespace Userspace.Web.Controllers
             return View("Tags", tags);
         }
         [HttpGet]
-        public async Task<IActionResult> TagsPartial(LinkResource model)
-        {
-            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
-            if (linkOccurance != null)
-            {
-                var response = await _tagService.GetTagsByLinkId(linkOccurance.ID);
-                if (response != null && response.Any())
-                {
-                    var tagResources = new List<TagResource>(response.ToList());
-                    var mv = new ModelVariables();
-                    mv.LinkId = model.ID;
-                    mv.TagName = model.Name;
-                    mv.Options = tagResources.Select(x =>
-                    new SelectListItem
-                    {
-                        Value = x.ID.ToString(),
-                        Text = x.Name
-                    }).ToList();
-
-                    return View("TagsPartial", mv);
-                }
-                model.ID = linkOccurance.ID;
-            }
-            return View("TagsCreate", model);
-        }
-        [HttpGet]
         public ActionResult Login()
         {
             return View();
@@ -85,16 +59,13 @@ namespace Userspace.Web.Controllers
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-                ViewBag.Message = string.Format("Credentials are in incorrect format.");
+                return RedirectToAction("Login");
             var result = await _authService.Login(model);
             if (!result)
             {
-                ViewBag.Message = string.Format("Incorrect username or password.");
                 return RedirectToAction("Login");
             }
-            ViewBag.Message = string.Format("User signed up.");
-
-            return RedirectToAction("Index");
+            return RedirectToAction("Home");
         }
         [HttpGet]
         public ActionResult Register()
@@ -102,24 +73,19 @@ namespace Userspace.Web.Controllers
             return View();
         }
         [HttpPost]
-        [AllowAnonymous]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
-                ViewBag.Message = string.Format("Credentials are in incorrect format.");
+                return RedirectToAction("Register");
             var result = await _authService.Register(model);
             if (!result)
             {
-                ViewBag.Message = string.Format("Try again.");
                 return RedirectToAction("Register");
             }
-            ViewBag.Message = string.Format("User signed in.");
-            return RedirectToAction("Login");
+            return RedirectToAction("Home");
         }
-        [AllowAnonymous]
         public async Task<ActionResult> Create([Bind("Name, TagResources")] LinkResource model)
         {
-
             if (!String.IsNullOrEmpty(model.Name))
             {
                 if (ModelState.IsValid)
@@ -129,7 +95,7 @@ namespace Userspace.Web.Controllers
                     {
                         ViewBag.ErrorMessage = "Each link - tag relation must have a value. Link must have at least one tag associated with it. User cannot add same link multiple times.";
                     }
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Home");
                 }
                 else
                 {
@@ -139,21 +105,8 @@ namespace Userspace.Web.Controllers
             }
             return View(model);
         }
-
-        public async Task<ActionResult> CreateTag(TagPartial model)
-        {
-            await _tagService.CreateTag(new TagResource { LinkId = Convert.ToInt32(model.LinkId), Name = model.TagName });
-            return RedirectToAction("Index");
-        }
-        [HttpGet]
-        public async Task<ActionResult> TagsCreate(LinkResource model)
-        {
-            return View(model);
-        }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {
-            //ModelState.IsValid;
-
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
             {
@@ -165,21 +118,23 @@ namespace Userspace.Web.Controllers
                     {
                         model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = item.Item2 });
                     }
-                }                          
+                }
             }
             model.TagResources.Add(new TagResource());
+
             return PartialView("TagRow", model);
         }
-
         public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource model)
         {
             model.TagResources.Add(new TagResource());
+
             return PartialView("TagRow", model);
         }
         public async Task<ActionResult> ClearTags([Bind("Name, TagResources")] LinkResource model)
         {
             if (model.TagResources != null)
                 model.TagResources.Clear();
+
             return View("TagRow", model);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
