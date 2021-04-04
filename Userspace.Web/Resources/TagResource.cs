@@ -22,7 +22,7 @@ namespace Userspace.Web.Resources
         [Required]
         public string Name { get; set; }
         public int LinkId { get; set; }
-        public int NumberOfOccurances { get; set; } 
+        public string NumberOfOccurances { get; set; } 
         public bool IsDeleted { get; set; }
     }
 }
