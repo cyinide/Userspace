@@ -77,11 +77,17 @@ namespace Userspace.Api.Controllers
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
             if (linkToCreate.Name.StartsWith("http://"))
                 linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
+            if (linkToCreate.Name.StartsWith("https://"))
+                linkToCreate.Name = linkToCreate.Name.Remove(0, 8);
 
             var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
             if (existingLink != null)
             {
                 await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
+                foreach (var item in linkToCreate.Tags)
+                {
+                    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
+                }
                 return NoContent();
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
