@@ -17,7 +17,7 @@ namespace Userspace.Web.Services
     {
         public HttpClient _httpClient { get; set; }
         private string tagsUrl;
-        public TagService(IHttpClientFactory httpClientFactory, ApiEndpointLocal apiEndpoint)
+        public TagService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
              tagsUrl = apiEndpoint.TagsEndpointUrl;

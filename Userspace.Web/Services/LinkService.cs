@@ -19,7 +19,7 @@ namespace Userspace.Web.Services
     {
         public HttpClient _httpClient { get; set; }
         private string linksUrl;
-        public LinkService(IHttpClientFactory httpClientFactory, ApiEndpointLocal apiEndpoint)
+        public LinkService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
              linksUrl = apiEndpoint.LinksEndpointUrl;

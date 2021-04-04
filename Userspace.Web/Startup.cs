@@ -25,8 +25,8 @@ namespace Userspace.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var section = Configuration.GetSection(nameof(ApiEndpointLocal));
-            var userspaceConfig = section.Get<ApiEndpointLocal>();
+            var section = Configuration.GetSection(nameof(ApiEndpoint));
+            var userspaceConfig = section.Get<ApiEndpoint>();
             services.AddSingleton(userspaceConfig);
 
             services.AddTransient<ILinkService, LinkService>();
