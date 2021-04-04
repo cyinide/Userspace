@@ -127,7 +127,7 @@ namespace Userspace.Web.Controllers
             {
                 List<TagResource> tagResourcesForSuggestion = new List<TagResource>();
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.com");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(link.Name);
                 request.AutomaticDecompression = DecompressionMethods.GZip;
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
