@@ -131,7 +131,7 @@ namespace Userspace.Web.Controllers
             {
                 List<TagResource> tagResourcesForSuggestion = new List<TagResource>();
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://" + link.Name);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(link.Name);
                 request.AutomaticDecompression = DecompressionMethods.GZip;
 
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
@@ -178,6 +178,11 @@ namespace Userspace.Web.Controllers
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {
+            if (model.Name.StartsWith("http://"))
+                model.Name = model.Name.Remove(0, 7);
+            if (model.Name.StartsWith("https://"))
+                model.Name = model.Name.Remove(0, 8);
+
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
             {
