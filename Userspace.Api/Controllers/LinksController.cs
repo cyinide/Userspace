@@ -95,7 +95,7 @@ namespace Userspace.Api.Controllers
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 
-            return CreatedAtRoute(nameof(GetLinkById), new { Id = newLink.ID }, newLink);
+            return CreatedAtRoute(nameof(GetLinkById), new { Id = newLink.ID }, linkResource);
         }
         // GET: api/links/withtags
         [HttpGet("withtags")]
