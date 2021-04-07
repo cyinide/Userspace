@@ -107,15 +107,15 @@ namespace Userspace.Web.Controllers
                         return View(model);
                     }
                     model.ID = createdLink.ID;
-                    var contentTags = StripHtml(model);
-                    if (contentTags != null && contentTags.Any())
-                    {
-                        foreach (var item in contentTags)//TODO: CreateTagRange
-                        {
-                            item.LinkId = createdLink.ID;
-                           await _tagService.CreateTag(item); 
-                        }
-                    }
+                    //var contentTags = StripHtml(model);
+                    //if (contentTags != null && contentTags.Any())
+                    //{
+                    //    foreach (var item in contentTags)//TODO: CreateTagRange
+                    //    {
+                    //        item.LinkId = createdLink.ID;
+                    //       await _tagService.CreateTag(item); 
+                    //    }
+                    //}
                     return RedirectToAction("Home");
                 }
                 else
@@ -187,10 +187,10 @@ namespace Userspace.Web.Controllers
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
         {
-            if (model.Name.StartsWith("http://"))
-                model.Name = model.Name.Remove(0, 7);
-            if (model.Name.StartsWith("https://"))
-                model.Name = model.Name.Remove(0, 8);
+            //if (model.Name.StartsWith("http://"))
+            //    model.Name = model.Name.Remove(0, 7);
+            //if (model.Name.StartsWith("https://"))
+            //    model.Name = model.Name.Remove(0, 8);
 
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
@@ -206,6 +206,23 @@ namespace Userspace.Web.Controllers
                         else
                             model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
                     }
+                }
+            }
+            //apply DRY principle
+            var contentTags = StripHtml(model);
+            if (contentTags != null && contentTags.Any())
+            {
+                var grouped = contentTags.GroupBy(x => x.Name)
+                .OrderBy(group => group.Key)
+                .Select(group => Tuple.Create(group.Key, group.Count()))
+                .ToList();
+
+            var sorted = grouped.OrderByDescending(x => x.Item2).ThenBy(X => X.Item1).ToList();
+
+                foreach (var item in sorted)
+                {
+                    //item.LinkId = model.ID;
+                    model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
                 }
             }
             model.TagResources.Add(new TagResource());
