@@ -88,14 +88,14 @@ namespace Userspace.Api.Controllers
                 {
                     await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
                 }
-                return NoContent();
+                return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
             await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 
-            return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
+            return CreatedAtRoute(nameof(GetLinkById), new { Id = newLink.ID }, newLink);
         }
         // GET: api/links/withtags
         [HttpGet("withtags")]

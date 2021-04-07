@@ -106,11 +106,13 @@ namespace Userspace.Web.Controllers
                         ViewBag.ErrorMessage = Settings.ErrorMessage;
                         return View(model);
                     }
-                    var contentTags = StripHtml(createdLink);
+                    model.ID = createdLink.ID;
+                    var contentTags = StripHtml(model);
                     if (contentTags != null && contentTags.Any())
                     {
                         foreach (var item in contentTags)//TODO: CreateTagRange
                         {
+                            item.LinkId = createdLink.ID;
                            await _tagService.CreateTag(item); 
                         }
                     }
