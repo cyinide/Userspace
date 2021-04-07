@@ -165,10 +165,17 @@ namespace Userspace.Web.Controllers
 
                 var count = sortedkeywords.Count() > 10 ? 10 : sortedkeywords.Count() - 1;
 
-                foreach (var item in sortedkeywords.GetRange(0, count))
+                foreach (var item in sortedkeywords.GetRange(0, count)) //temporary
                 {
                     if (item.Count > 2)
-                        tagResourcesForSuggestion.Add(new TagResource { Name = item.Keyword, NumberOfOccurances = "Occured " + item.Count + " times.", LinkId = link.ID });
+                    {
+                        for (int i = 0; i < item.Count; i++)
+                        {
+                            tagResourcesForSuggestion.Add(new TagResource { Name = item.Keyword, LinkId = link.ID });
+                        }
+                        //tagResourcesForSuggestion.Add(new TagResource { Name = item.Keyword, NumberOfOccurances = "Occured " + item.Count + " times.", LinkId = link.ID });
+                    }
+                    
                 }
 
                 return tagResourcesForSuggestion;
