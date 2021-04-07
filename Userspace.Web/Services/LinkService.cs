@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
@@ -22,7 +23,7 @@ namespace Userspace.Web.Services
         public LinkService(IHttpClientFactory httpClientFactory, ApiEndpoint apiEndpoint)
         {
             _httpClient = httpClientFactory.CreateClient();
-             linksUrl = apiEndpoint.LinksEndpointUrl;
+            linksUrl = apiEndpoint.LinksEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
         }
@@ -72,8 +73,13 @@ namespace Userspace.Web.Services
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
 
                 var response = await _httpClient.PostAsync(linksUrl, stringContent);
-                if (response.StatusCode == HttpStatusCode.NoContent)
-                    return new LinkResource { Name = link.Name };
+
+                if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    var errmsg = JsonConvert.DeserializeObject<dynamic>(response.Content.ReadAsStringAsync().Result);
+                    var id = Regex.Match(Convert.ToString(errmsg), @"'([^']*)").Groups[1].Value;
+                    return new LinkResource { ID = Convert.ToInt32(id), Name = link.Name };
+                }
 
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var createdLink = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
