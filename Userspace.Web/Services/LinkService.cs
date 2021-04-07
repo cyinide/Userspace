@@ -51,7 +51,7 @@ namespace Userspace.Web.Services
         {
             try
             {
-                var querystring = Uri.EscapeDataString(name);
+                var querystring = System.Web.HttpUtility.UrlEncode(name);
                 var response = await _httpClient.GetAsync(linksUrl + "/checkforoccurance/" + querystring);
                 string apiResponse = await response.Content.ReadAsStringAsync();
                 var link = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
