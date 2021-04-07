@@ -55,6 +55,10 @@ namespace Userspace.Api.Controllers
         [HttpGet("checkforoccurance/{name}")]
         public async Task<ActionResult<LinkResource>> CheckForLinkOccuranceAsync(string name)
         {
+            if (name.StartsWith("http://"))
+                name = name.Remove(0, 7);
+            if (name.StartsWith("https://"))
+                name = name.Remove(0, 8);
             var link = await _linkService.CheckForLinkOccuranceAsync(name);
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
