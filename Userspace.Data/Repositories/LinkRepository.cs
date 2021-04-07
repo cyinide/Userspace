@@ -22,9 +22,11 @@ namespace Userspace.Data.Repositories
         }
         public async Task<Link> CheckForLinkOccuranceAsync(string name) 
         {
-            string string1 = name.Replace("%2F","/");
+            string string1 = System.Web.HttpUtility.UrlDecode(name);
             if (string1.StartsWith("http://"))
                 string1 = string1.Remove(0, 7);
+            if (string1.StartsWith("https://"))
+                string1 = string1.Remove(0, 8);
 
             string[] words1 = string1.Split(new char[] { ',', '?', '=', '&' });
             HashSet<string> mySet1 = new HashSet<string>(words1.ToList());
@@ -32,7 +34,9 @@ namespace Userspace.Data.Repositories
             foreach (var link in UserspaceDbContext.Links) 
             {
                 if (link.Name.StartsWith("http://"))
-                    link.Name = link.Name.Remove(0, 7); //just in case
+                    link.Name = link.Name.Remove(0, 7);
+                if (link.Name.StartsWith("https://"))
+                    link.Name = link.Name.Remove(0, 8);
 
                 string[] words2 = link.Name.Split(new char[] { ',', '?', '=', '&' });
                 HashSet<string> mySet2 = new HashSet<string>(words2.ToList());
