@@ -5,7 +5,8 @@ Initial repository -> https://github.com/cyinide/Userspace.git :
         - clean architecture, with implementation of software design principles
         - dependency-inverted architecture using dependency injection pattern
         - implementation of repository and unit of work pattern
-        - JWT authentication   
+        - asp.net core identity and jwt based authentication   
+ 
         
 - this mirrored repository is later to be merged with initial
 - current beta version -v1.0 requires further model reconstruction before rc1 is available 
