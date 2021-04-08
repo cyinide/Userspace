@@ -28,15 +28,15 @@ namespace Userspace.Data.Repositories
         public async Task<IEnumerable<Tag>> GetTagsByLinkIdAsync(int linkId)
         {
             return await UserspaceDbContext.Tags
-                .Include(x => x.Link)
-                .Where(x => x.LinkId == linkId)
+                //.Include(x => x.Link)
+                //.Where(x => x.LinkId == linkId)
                 .ToListAsync();
         }
         public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
         {
             var x = await UserspaceDbContext.Tags
-                .Include(x => x.Link)
-                .Where(x => x.LinkId == linkId)
+                //.Include(x => x.Link)
+                //.Where(x => x.LinkId == linkId)
                 .GroupBy(x=>x.Name)
                 .OrderBy(group=>group.Key)
                 .Select(group=>Tuple.Create(group.Key,group.Count()))

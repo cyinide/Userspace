@@ -54,13 +54,13 @@ namespace Userspace.Data.Repositories
         public async Task<IEnumerable<Link>> GetAllWithTagsAsync()
         {
             return await UserspaceDbContext.Links
-                .Include(x => x.Tags)
+                //.Include(x => x.Tags)
                 .ToListAsync();
         }
         public async Task<Link> GetWithTagsByIdAsync(int id)
         {
             return await UserspaceDbContext.Links
-               .Include(x => x.Tags)
+               //.Include(x => x.Tags)
                .Where(x => x.ID == id)
                .FirstOrDefaultAsync();
         }
@@ -69,7 +69,7 @@ namespace Userspace.Data.Repositories
             return await UserspaceDbContext.UserLinks
                 .Where(x => x.UserId == Guid.Parse(userId))
                 .Include(x => x.Link)
-                .ThenInclude(x => x.Tags)
+                //.ThenInclude(x => x.Tags)
                 .ToListAsync();
         }
         private UserspaceDbContext UserspaceDbContext

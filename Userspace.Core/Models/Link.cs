@@ -9,12 +9,10 @@ namespace Userspace.Core.Models
     {
         public Link()
         {
-            Tags = new HashSet<Tag>();
             UserLinks = new HashSet<UserLink>();
         }
         public int ID { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<Tag> Tags { get; set; }
         public virtual ICollection<UserLink> UserLinks { get; set; }
     }
 }

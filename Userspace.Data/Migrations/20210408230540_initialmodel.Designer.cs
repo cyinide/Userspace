@@ -10,14 +10,14 @@ using Userspace.Data;
 namespace Userspace.Data.Migrations
 {
     [DbContext(typeof(UserspaceDbContext))]
-    [Migration("20210330075948_seed")]
-    partial class seed
+    [Migration("20210408230540_initialmodel")]
+    partial class initialmodel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -248,16 +248,11 @@ namespace Userspace.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("LinkId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("LinkId");
 
                     b.ToTable("Tags");
                 });
@@ -271,7 +266,12 @@ namespace Userspace.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("LinkId", "UserId");
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LinkId", "UserId", "TagId");
+
+                    b.HasIndex("TagId");
 
                     b.HasIndex("UserId");
 
@@ -329,20 +329,17 @@ namespace Userspace.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Userspace.Core.Models.Tag", b =>
-                {
-                    b.HasOne("Userspace.Core.Models.Link", "Link")
-                        .WithMany("Tags")
-                        .HasForeignKey("LinkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Userspace.Core.Models.UserLink", b =>
                 {
                     b.HasOne("Userspace.Core.Models.Link", "Link")
                         .WithMany("UserLinks")
                         .HasForeignKey("LinkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Userspace.Core.Models.Tag", "Tag")
+                        .WithMany("UserLinks")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

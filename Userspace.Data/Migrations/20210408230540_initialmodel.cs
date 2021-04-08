@@ -63,6 +63,19 @@ namespace Userspace.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -169,39 +182,26 @@ namespace Userspace.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tags",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
-                    LinkId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tags", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Tags_Links_LinkId",
-                        column: x => x.LinkId,
-                        principalTable: "Links",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserLinks",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(nullable: false),
-                    LinkId = table.Column<int>(nullable: false)
+                    LinkId = table.Column<int>(nullable: false),
+                    TagId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLinks", x => new { x.LinkId, x.UserId });
+                    table.PrimaryKey("PK_UserLinks", x => new { x.LinkId, x.UserId, x.TagId });
                     table.ForeignKey(
                         name: "FK_UserLinks_Links_LinkId",
                         column: x => x.LinkId,
                         principalTable: "Links",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserLinks_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -252,9 +252,9 @@ namespace Userspace.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tags_LinkId",
-                table: "Tags",
-                column: "LinkId");
+                name: "IX_UserLinks_TagId",
+                table: "UserLinks",
+                column: "TagId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLinks_UserId",
@@ -280,9 +280,6 @@ namespace Userspace.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Tags");
-
-            migrationBuilder.DropTable(
                 name: "UserLinks");
 
             migrationBuilder.DropTable(
@@ -290,6 +287,9 @@ namespace Userspace.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Links");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

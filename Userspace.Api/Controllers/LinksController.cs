@@ -88,10 +88,10 @@ namespace Userspace.Api.Controllers
             if (existingLink != null)
             {
                 await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
-                foreach (var item in linkToCreate.Tags)
-                {
-                    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
-                }
+                //foreach (var item in linkToCreate.Tags)
+                //{
+                //    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
+                //}
                 return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
