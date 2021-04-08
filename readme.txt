@@ -8,6 +8,6 @@ Initial repository -> https://github.com/cyinide/Userspace.git :
         - asp.net core identity and jwt based authentication   
  
         
-- this mirrored repository is later to be merged with initial
+- this mirrored repository is later to be merged with initial userspace git repository
 - current beta version -v1.0 requires further model reconstruction before rc1 is available 
         
