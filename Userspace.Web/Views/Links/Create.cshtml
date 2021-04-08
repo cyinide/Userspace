@@ -22,7 +22,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input id="linkUrl" asp-for="Name" onchange="UrlChanged()" style="width:400px" class="form-control" placeholder="URL" />
+                <input id="linkUrl" asp-for="Name" onchange="UrlChanged()" style="width:400px; text-transform:lowercase" class="form-control" placeholder="URL" />
                 <span id="valmsg" style="display:none" asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -32,6 +32,7 @@
             <div id="tagItemsContainer" style="display:none">
                 @Html.EditorFor(Model => Model.TagResources)
             </div>
+            <label id="loader" class="text-danger" style="display:none">Data is loading..</label>
             <div class="row" id="addtagbutton" style="display:none">
                 <div class="col-md-4">
                     <input class="btn btn-info" type="button" id="btnAdd" value="Add another tag" />
@@ -75,6 +76,7 @@
 
         function ShowTags() {
             if (callOne) {
+                document.getElementById('loader').style.display = 'block';
                 $.ajax({
                     async: true,
                     data: $('#createform').serialize(),
@@ -82,6 +84,7 @@
                     url: '/Links/InitializeTags',
                     success: function (partialView) {
                         $('#tagItemsContainer').html(partialView);
+                        document.getElementById('loader').style.display = 'none';
                     }
                 });
                 callOne = false;
@@ -156,5 +159,6 @@
             document.getElementById('valmsg').style.display = 'none';
             document.getElementById("createform").submit();
         }      
+
     </script>
 }

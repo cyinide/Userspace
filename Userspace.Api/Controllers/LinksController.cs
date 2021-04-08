@@ -55,6 +55,10 @@ namespace Userspace.Api.Controllers
         [HttpGet("checkforoccurance/{name}")]
         public async Task<ActionResult<LinkResource>> CheckForLinkOccuranceAsync(string name)
         {
+            if (name.StartsWith("http:%2f%2f")) //encode aswell
+                name = name.Remove(0, 11);
+            if (name.StartsWith("http:%2f%2f")) //encode aswell
+            name = name.Remove(0, 12);
             var link = await _linkService.CheckForLinkOccuranceAsync(name);
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
@@ -88,14 +92,14 @@ namespace Userspace.Api.Controllers
                 {
                     await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
                 }
-                return NoContent();
+                return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
             await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 
-            return CreatedAtRoute(nameof(GetLinkById), new { Id = linkResource.ID }, linkResource);
+            return CreatedAtRoute(nameof(GetLinkById), new { Id = newLink.ID }, linkResource);
         }
         // GET: api/links/withtags
         [HttpGet("withtags")]
