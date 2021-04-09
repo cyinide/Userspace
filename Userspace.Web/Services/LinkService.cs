@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Userspace.Web.Services
             _httpClient = httpClientFactory.CreateClient();
             linksUrl = apiEndpoint.LinksEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
+            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Settings.JwtToken);
         }
         [HttpGet]
         public async Task<IEnumerable<LinkViewModel>> GetLinks(string userId)

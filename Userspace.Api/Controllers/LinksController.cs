@@ -16,7 +16,7 @@ using Userspace.Core.Services;
 namespace Userspace.Api.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class LinksController : ControllerBase
     {
@@ -67,7 +67,7 @@ namespace Userspace.Api.Controllers
             ClaimsPrincipal currentUser = this.User;
             if (!currentUser.Claims.Any())
                 return Unauthorized(); 
-            var currentUserID = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            ApiSettings.CurrentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var validator = new SaveLinkResourceValidator();
             var validationResult = await validator.ValidateAsync(saveLinkResource);
@@ -79,7 +79,7 @@ namespace Userspace.Api.Controllers
             var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
             if (existingLink != null)
             {
-                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(currentUserID) });
+                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(ApiSettings.CurrentUserId) });
                 //foreach (var item in linkToCreate.Tags)
                 //{
                 //    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
@@ -87,7 +87,7 @@ namespace Userspace.Api.Controllers
                 return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
-            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(currentUserID) });
+            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(ApiSettings.CurrentUserId) });
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 
@@ -97,23 +97,23 @@ namespace Userspace.Api.Controllers
         [HttpGet("withtags")]
         public async Task<ActionResult<IEnumerable<LinkResource>>> GetAllWithTags()
         {
-            var links = await _linkService.GetAllWithTagsAsync();
-            if (links == null)
-                return NotFound();
-            var linkResources = _mapper.Map<IEnumerable<Link>, IEnumerable<LinkResource>>(links);
+            //var links = await _linkService.GetAllWithTagsAsync();
+            //if (links == null)
+            //    return NotFound();
+            //var linkResources = _mapper.Map<IEnumerable<UserLink>, IEnumerable<LinkResource>>(links);
 
-            return Ok(linkResources);
+            return Ok(); //linkResources
         }
         // GET: api/links/withtags/id
         [HttpGet("withtagsbyid/{id}")]
         public async Task<ActionResult<LinkResource>> GetWithTagsById(int id)
         {
-            var link = await _linkService.GetWithTagsByIdAsync(id);
-            if (link == null)
-                return NotFound();
-            var linkResource = _mapper.Map<Link, LinkResource>(link);
+            //var link = await _linkService.GetWithTagsByIdAsync(id);
+            //if (link == null)
+            //    return NotFound();
+            //var linkResource = _mapper.Map<Link, LinkResource>(link);
 
-            return Ok(linkResource);
+            return Ok();//linkResource
         }
         // GET: api/links/withtagsbyuserid/id
         [HttpGet("withtagsbyuserid/{userId}")]

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,12 @@ namespace Userspace.Api.Controllers.Auth
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
         }
+        /// <summary>
+        /// JWT signup
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp(SignUpResource userSignUpResource)
         {
@@ -42,6 +49,12 @@ namespace Userspace.Api.Controllers.Auth
             }
             return Problem(userCreateResult.Errors.First().Description, null, 500);
         }
+        /// <summary>
+        /// JWT signin
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("signin")]
         public async Task<IActionResult> SignIn(SignInResource userSignInResource)
         {
@@ -84,5 +97,12 @@ namespace Userspace.Api.Controllers.Auth
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    }
+    //    [HttpGet]
+    //    public async Task<string> GetCurrentUserId()
+    //    {
+    //        User usr = await GetCurrentUserAsync();
+    //        return usr?.Id.ToString();
+    //    }
+    //    private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+      }
 }

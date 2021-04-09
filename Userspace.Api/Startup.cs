@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -61,10 +62,12 @@ namespace Userspace.Api
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT containing userid claim",
-                    Name = "Authorization",
+                    Name = "JWT Authentication",
+                    Description = "Enter JWT Bearer token",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer", 
+                    BearerFormat = "JWT"
                 });
 
                 var security =
@@ -75,7 +78,7 @@ namespace Userspace.Api
                             {
                                 Reference = new OpenApiReference
                                 {
-                                    Id = "Bearer",
+                                    Id = JwtBearerDefaults.AuthenticationScheme,
                                     Type = ReferenceType.SecurityScheme
                                 },
                                 UnresolvedReference = true
@@ -111,8 +114,6 @@ namespace Userspace.Api
             app.UseRouting();
 
             app.UseCors("AllowAllOrigins");
-
-            app.UseAuthorization();
 
             app.UseAuth();
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Userspace.Core.Models;
 using Userspace.Core.Repositories;
@@ -14,14 +15,20 @@ namespace Userspace.Data.Repositories
         public LinkRepository(UserspaceDbContext context)
             : base(context)
         { }
-        public async Task<Link> GetLinkByIdAsync(int linkId)
+        public async Task<UserLink> GetLinkByIdAsync(int linkId, string userId)
         {
-            return await UserspaceDbContext.Links
-                .Where(x => x.ID == linkId)
+
+            return await UserspaceDbContext.UserLinks
+                .Include(x => x.Link)
+                .Where(x => x.LinkId == linkId)
+                .Where(x => x.UserId.ToString() == userId)
                     .SingleOrDefaultAsync();
+
+
         }
-        public async Task<Link> CheckForLinkOccuranceAsync(string name) 
+        public async Task<Link> CheckForLinkOccuranceAsync(string name)
         {
+
             string string1 = System.Web.HttpUtility.UrlDecode(name);
             if (string1.StartsWith("http://"))
                 string1 = string1.Remove(0, 7);
@@ -29,7 +36,7 @@ namespace Userspace.Data.Repositories
             string[] words1 = string1.Split(new char[] { ',', '?', '=', '&' });
             HashSet<string> mySet1 = new HashSet<string>(words1.ToList());
 
-            foreach (var link in UserspaceDbContext.Links) 
+            foreach (var link in UserspaceDbContext.Links)
             {
                 if (link.Name.StartsWith("http://"))
                     link.Name = link.Name.Remove(0, 7);
@@ -50,25 +57,27 @@ namespace Userspace.Data.Repositories
             }
             return null;
         }
-        public async Task<IEnumerable<Link>> GetAllWithTagsAsync()
+        public async Task<IEnumerable<UserLink>> GetAllWithTagsAsync(string userId)
         {
-            return await UserspaceDbContext.Links
-                //.Include(x => x.Tags)
+            return await UserspaceDbContext.UserLinks
+                .Include(x => x.Link)
+                .Include(x => x.Tag)
+                .Where(x => x.UserId.ToString() == userId)
                 .ToListAsync();
         }
-        public async Task<Link> GetWithTagsByIdAsync(int id)
+        public async Task<UserLink> GetWithTagsByIdAsync(int id, string userId)
         {
-            return await UserspaceDbContext.Links
-               //.Include(x => x.Tags)
-               .Where(x => x.ID == id)
+            return await UserspaceDbContext.UserLinks
+               .Include(x => x.Tag)
+               .Where(x => x.LinkId == id)
+               .Where(x => x.UserId.ToString() == userId)
                .FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<UserLink>> GetLinksByUserIdAsync(string userId)
         {
             return await UserspaceDbContext.UserLinks
-                .Where(x => x.UserId == Guid.Parse(userId))
                 .Include(x => x.Link)
-                //.ThenInclude(x => x.Tags)
+                .Where(x => x.UserId.ToString() == userId)
                 .ToListAsync();
         }
         private UserspaceDbContext UserspaceDbContext

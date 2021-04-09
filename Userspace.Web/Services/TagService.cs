@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace Userspace.Web.Services
             _httpClient = httpClientFactory.CreateClient();
              tagsUrl = apiEndpoint.TagsEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", Settings.JwtToken);
+            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Settings.JwtToken);
         }
         public async Task<IEnumerable<TagResource>> GetTags()
         {

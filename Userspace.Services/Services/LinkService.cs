@@ -36,15 +36,15 @@ namespace Userspace.Services.Services
             await _unitOfWork.CommitAsync();
             return newLink;
         }
-        public async Task<IEnumerable<Link>> GetAllWithTagsAsync()
+        public async Task<IEnumerable<UserLink>> GetAllWithTagsAsync(string userId)
         {
             return await _unitOfWork.Links
-                .GetAllWithTagsAsync();
+                .GetAllWithTagsAsync(userId);
         }
-        public async Task<Link> GetWithTagsByIdAsync(int id)
+        public async Task<UserLink> GetWithTagsByIdAsync(int id, string userId)
         {
             return await _unitOfWork.Links
-                .GetWithTagsByIdAsync(id);
+                .GetWithTagsByIdAsync(id, userId);
         }
         public async Task<IEnumerable<UserLink>> GetLinksByUserId(string userId)
         {

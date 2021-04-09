@@ -13,7 +13,7 @@ using Userspace.Core.Services;
 namespace Userspace.Api.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class TagsController : ControllerBase
     {
