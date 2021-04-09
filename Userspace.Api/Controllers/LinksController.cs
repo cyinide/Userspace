@@ -55,10 +55,6 @@ namespace Userspace.Api.Controllers
         [HttpGet("checkforoccurance/{name}")]
         public async Task<ActionResult<LinkResource>> CheckForLinkOccuranceAsync(string name)
         {
-            if (name.StartsWith("http:%2f%2f")) //encode aswell
-                name = name.Remove(0, 11);
-            if (name.StartsWith("http:%2f%2f")) //encode aswell
-            name = name.Remove(0, 12);
             var link = await _linkService.CheckForLinkOccuranceAsync(name);
             var linkResource = _mapper.Map<Link, LinkResource>(link);
 
@@ -79,10 +75,6 @@ namespace Userspace.Api.Controllers
                 return BadRequest(validationResult.Errors);
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
-            if (linkToCreate.Name.StartsWith("http://"))
-                linkToCreate.Name = linkToCreate.Name.Remove(0, 7);
-            if (linkToCreate.Name.StartsWith("https://"))
-                linkToCreate.Name = linkToCreate.Name.Remove(0, 8);
 
             var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
             if (existingLink != null)
