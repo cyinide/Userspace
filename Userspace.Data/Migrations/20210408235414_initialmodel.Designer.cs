@@ -10,14 +10,14 @@ using Userspace.Data;
 namespace Userspace.Data.Migrations
 {
     [DbContext(typeof(UserspaceDbContext))]
-    [Migration("20210330075948_seed")]
-    partial class seed
+    [Migration("20210408235414_initialmodel")]
+    partial class initialmodel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 

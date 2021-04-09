@@ -25,8 +25,6 @@ namespace Userspace.Data.Repositories
             string string1 = System.Web.HttpUtility.UrlDecode(name);
             if (string1.StartsWith("http://"))
                 string1 = string1.Remove(0, 7);
-            if (string1.StartsWith("https://"))
-                string1 = string1.Remove(0, 8);
 
             string[] words1 = string1.Split(new char[] { ',', '?', '=', '&' });
             HashSet<string> mySet1 = new HashSet<string>(words1.ToList());
@@ -35,15 +33,16 @@ namespace Userspace.Data.Repositories
             {
                 if (link.Name.StartsWith("http://"))
                     link.Name = link.Name.Remove(0, 7);
-                if (link.Name.StartsWith("https://"))
-                    link.Name = link.Name.Remove(0, 8);
 
                 string[] words2 = link.Name.Split(new char[] { ',', '?', '=', '&' });
                 HashSet<string> mySet2 = new HashSet<string>(words2.ToList());
                 HashSet<string> mySetTemp = new HashSet<string>(mySet1);
                 mySet1.ExceptWith(mySet2);
                 if (!mySet1.Any())
+                {
+                    link.Name = link.Name.Insert(0, "http://");
                     return link;
+                }
                 else
                 {
                     mySet1 = new HashSet<string>(mySetTemp);
