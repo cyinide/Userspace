@@ -205,8 +205,6 @@ namespace Userspace.Web.Controllers
                     }
                 }
             }
-            else
-            {
                 //suggest from content
                 var contentTags = StripHtml(model);
                 if (contentTags != null && contentTags.Any())
@@ -223,7 +221,7 @@ namespace Userspace.Web.Controllers
                         //item.LinkId = model.ID;
                         model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
                     }
-                }
+                
             }
             model.TagResources.Add(new TagResource());
 
