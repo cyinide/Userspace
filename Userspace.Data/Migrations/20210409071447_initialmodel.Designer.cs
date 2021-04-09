@@ -10,7 +10,7 @@ using Userspace.Data;
 namespace Userspace.Data.Migrations
 {
     [DbContext(typeof(UserspaceDbContext))]
-    [Migration("20210408230540_initialmodel")]
+    [Migration("20210409071447_initialmodel")]
     partial class initialmodel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
