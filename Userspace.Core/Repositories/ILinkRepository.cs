@@ -8,6 +8,7 @@ namespace Userspace.Core.Repositories
 {
     public interface ILinkRepository : IRepository<Link>
     {
+        Task<IEnumerable<Link>> GetAllLinksAsync(string name);
         Task<Link> CheckForLinkOccuranceAsync(string name);
         Task<IEnumerable<UserLink>> GetAllWithTagsAsync(string userId);
         Task<UserLink> GetWithTagsByIdAsync(int id, string userId);

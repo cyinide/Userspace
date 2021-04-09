@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Resources;
+using static Userspace.Web.Settings;
 
 namespace Userspace.Web.Services
 {
@@ -23,7 +24,7 @@ namespace Userspace.Web.Services
             _httpClient = httpClientFactory.CreateClient();
              tagsUrl = apiEndpoint.TagsEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Settings.JwtToken);
+            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
         }
         public async Task<IEnumerable<TagResource>> GetTags()
         {

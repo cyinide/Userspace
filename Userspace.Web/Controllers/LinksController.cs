@@ -19,6 +19,7 @@ using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Models.Auth;
 using Userspace.Web.Resources;
+using static Userspace.Web.Settings;
 
 namespace Userspace.Web.Controllers
 {
@@ -37,7 +38,7 @@ namespace Userspace.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Home()
         {
-            var links = await _linkService.GetLinks(Settings.CurrentUserId);
+            var links = await _linkService.GetLinks(userId);
             return View(links);
         }
         [HttpGet]
@@ -97,13 +98,13 @@ namespace Userspace.Web.Controllers
                 {
                     if(model.TagResources == null || !model.TagResources.Any())
                     {
-                        ViewBag.ErrorMessage = Settings.ErrorMessage;
+                        ViewBag.ErrorMessage = errorMsg;
                         return View(model);
                     }
                     var createdLink = await _linkService.CreateLink(model);
                     if (createdLink == null)
                     {
-                        ViewBag.ErrorMessage = Settings.ErrorMessage;
+                        ViewBag.ErrorMessage = errorMsg;
                         return View(model);
                     }
                     model.ID = createdLink.ID;
@@ -121,7 +122,7 @@ namespace Userspace.Web.Controllers
                 else
                 {
                     model.TagResources.Clear();
-                    ViewBag.ErrorMessage = Settings.ErrorMessage;
+                    ViewBag.ErrorMessage = errorMsg;
                 }
             }
             return View(model);
@@ -242,8 +243,7 @@ namespace Userspace.Web.Controllers
         }
         public ActionResult Logout()
         {
-            Settings.CurrentUserId = String.Empty;
-            Settings.CurrentUserName = String.Empty;
+            userId = String.Empty;
             return View("Login");
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

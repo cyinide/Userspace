@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models.Auth;
+using static Userspace.Web.Settings;
 
 namespace Userspace.Web.Services
 {
@@ -35,9 +36,9 @@ namespace Userspace.Web.Services
 
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadJwtToken(jwt);
-                    Settings.CurrentUserId = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
-                    Settings.CurrentUserName = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name).Value;
-                    Settings.JwtToken = jwt;
+
+                    userId = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).Value;
+                    jwtToken = jwt;
                 }
 
                 return result.IsSuccessStatusCode;    

@@ -12,7 +12,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Userspace.Api.Resources.Auth;
-using Userspace.Api.Settings;
 using Userspace.Core.Models.Auth;
 
 namespace Userspace.Api.Controllers.Auth

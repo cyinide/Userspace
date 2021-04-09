@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Userspace.Core.Models;
+using Userspace.Core.Models.Auth;
 using Userspace.Core.Repositories;
 
 namespace Userspace.Data.Repositories
@@ -14,21 +16,27 @@ namespace Userspace.Data.Repositories
     {
         public LinkRepository(UserspaceDbContext context)
             : base(context)
-        { }
+        {}
+
+        public async Task<IEnumerable<Link>> GetAllLinksAsync(string userId)
+        {
+            return await UserspaceDbContext.UserLinks
+                .Include(x => x.Link)
+                .Where(x => x.UserId.ToString() == userId)
+                .Select(x=>x.Link)
+                .ToListAsync();
+        }
+
         public async Task<UserLink> GetLinkByIdAsync(int linkId, string userId)
         {
-
             return await UserspaceDbContext.UserLinks
                 .Include(x => x.Link)
                 .Where(x => x.LinkId == linkId)
                 .Where(x => x.UserId.ToString() == userId)
                     .SingleOrDefaultAsync();
-
-
         }
         public async Task<Link> CheckForLinkOccuranceAsync(string name)
         {
-
             string string1 = System.Web.HttpUtility.UrlDecode(name);
             if (string1.StartsWith("http://"))
                 string1 = string1.Remove(0, 7);
@@ -80,6 +88,7 @@ namespace Userspace.Data.Repositories
                 .Where(x => x.UserId.ToString() == userId)
                 .ToListAsync();
         }
+
         private UserspaceDbContext UserspaceDbContext
         {
             get { return Context as UserspaceDbContext; }

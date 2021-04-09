@@ -5,11 +5,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Userspace.Api.Resources;
 using Userspace.Api.Validators;
 using Userspace.Core.Models;
+using Userspace.Core.Models.Auth;
 using Userspace.Core.Services;
+using static Userspace.Api.Settings;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,19 +26,23 @@ namespace Userspace.Api.Controllers
         private readonly ILinkService _linkService;
         private readonly ITagService _tagService;
         private readonly IUserLinkService _userLinkService;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
-        public LinksController(ILinkService linkService, ITagService tagService, IUserLinkService userLinkService, IMapper mapper)
+        public LinksController(ILinkService linkService, ITagService tagService, IUserLinkService userLinkService, UserManager<User> userManager, IMapper mapper)
         {
             this._mapper = mapper;
             this._linkService = linkService;
             this._tagService = tagService;
             this._userLinkService = userLinkService;
+            this._userManager = userManager;
         }
         // GET: api/links
         [HttpGet("")]
         public async Task<ActionResult<IEnumerable<LinkResource>>> GetAll()
         {
-            var links = await _linkService.GetAll();
+            userId = _userManager.GetUserId(User); //temporary - in data layer with DI?
+
+            var links = await _linkService.GetAllLinksAsync(userId);
             var linkResources = _mapper.Map<IEnumerable<Link>, IEnumerable<LinkResource>>(links);
 
             return Ok(linkResources);
@@ -67,7 +74,7 @@ namespace Userspace.Api.Controllers
             ClaimsPrincipal currentUser = this.User;
             if (!currentUser.Claims.Any())
                 return Unauthorized(); 
-            ApiSettings.CurrentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            userId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var validator = new SaveLinkResourceValidator();
             var validationResult = await validator.ValidateAsync(saveLinkResource);
@@ -79,7 +86,7 @@ namespace Userspace.Api.Controllers
             var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
             if (existingLink != null)
             {
-                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(ApiSettings.CurrentUserId) });
+                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(userId)});
                 //foreach (var item in linkToCreate.Tags)
                 //{
                 //    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
@@ -87,7 +94,7 @@ namespace Userspace.Api.Controllers
                 return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
             }
             var newLink = await _linkService.CreateLink(linkToCreate);
-            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(ApiSettings.CurrentUserId) });
+            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(userId) });
             var link = await _linkService.GetLinkById(newLink.ID);
             var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 

@@ -15,10 +15,10 @@ namespace Userspace.Services.Services
         {
             this._unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Link>> GetAll()
+        public async Task<IEnumerable<Link>> GetAllLinksAsync(string userId)
         {
             return await _unitOfWork.Links
-                .GetAllAsync();
+                .GetAllLinksAsync(userId);
         }
         public async Task<Link> GetLinkById(int id)
         {

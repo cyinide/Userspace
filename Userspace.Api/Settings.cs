@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Userspace.Api.Settings
+namespace Userspace.Api
 {
+    public static class Settings
+    {
+        public static string userId = "";
+    }
     public class JwtSettings
     {
         public string Issuer { get; set; }

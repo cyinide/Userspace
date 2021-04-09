@@ -8,7 +8,7 @@ namespace Userspace.Core.Services
 {
     public interface ILinkService
     {
-        Task<IEnumerable<Link>> GetAll();
+        Task<IEnumerable<Link>> GetAllLinksAsync(string userId);
         Task<Link> GetLinkById(int id);
         Task<Link> CheckForLinkOccuranceAsync(string name);
         Task<Link> CreateLink(Link newLink);

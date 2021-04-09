@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Userspace.Api.Extensions;
-using Userspace.Api.Settings;
 using Userspace.Core;
 using Userspace.Core.Models.Auth;
 using Userspace.Core.Services;

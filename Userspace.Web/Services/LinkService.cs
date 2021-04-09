@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Userspace.Web.Interfaces;
 using Userspace.Web.Models;
 using Userspace.Web.Resources;
+using static Userspace.Web.Settings;
 
 namespace Userspace.Web.Services
 {
@@ -26,7 +27,7 @@ namespace Userspace.Web.Services
             _httpClient = httpClientFactory.CreateClient();
             linksUrl = apiEndpoint.LinksEndpointUrl;
             _httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Settings.JwtToken);
+            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtToken);
         }
         [HttpGet]
         public async Task<IEnumerable<LinkViewModel>> GetLinks(string userId)
@@ -36,7 +37,7 @@ namespace Userspace.Web.Services
                 List<LinkViewModel> links = new List<LinkViewModel>();
                 if (!String.IsNullOrEmpty(userId))
                 {
-                    var response = await _httpClient.GetAsync(linksUrl + "/withtagsbyuserid/" + userId);
+                    var response = await _httpClient.GetAsync(linksUrl);
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     links = JsonConvert.DeserializeObject<List<LinkViewModel>>(apiResponse);
                 }
@@ -69,7 +70,7 @@ namespace Userspace.Web.Services
         {
             try
             {
-                link.UserId = Settings.CurrentUserId;
+                link.UserId = userId;
                 var obj = JsonConvert.SerializeObject(link);
                 var stringContent = new StringContent(obj, UnicodeEncoding.UTF8, MediaTypeNames.Application.Json);
 
