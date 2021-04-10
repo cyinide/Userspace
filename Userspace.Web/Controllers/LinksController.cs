@@ -90,7 +90,7 @@ namespace Userspace.Web.Controllers
             }
             return RedirectToAction("Login");
         }
-        public async Task<ActionResult> Create([Bind("Name, TagResources")] LinkResource model)
+        public async Task<ActionResult> Create([Bind("Name, SelectedValue, TagResources")] LinkResource model)
         {
             if (!String.IsNullOrEmpty(model.Name))
             {
@@ -125,6 +125,7 @@ namespace Userspace.Web.Controllers
                     ViewBag.ErrorMessage = errorMsg;
                 }
             }
+
             return View(model);
         }
         protected List<TagResource> StripHtml(LinkResource link)
@@ -186,9 +187,8 @@ namespace Userspace.Web.Controllers
                 return null; //not possible to parse the provided URL
             }
         }
-        public async Task<ActionResult> InitializeTags([Bind("Name, TagResources")] LinkResource model)
+        public async Task<ActionResult> InitializeTags([Bind("Name, SelectedValue, TagResources")] LinkResource model)
         {
-
             //if exists
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
@@ -196,17 +196,17 @@ namespace Userspace.Web.Controllers
                 var tagsWithOccurances = await _tagService.GetTagsByOccurancesAndLinkIdAsync(linkOccurance.ID);
                 if (tagsWithOccurances != null && tagsWithOccurances.Any())
                 {
-                    model.TagResources = new List<TagResource>();
-                    foreach (var item in tagsWithOccurances)
-                    {
-                        if (item.Item2 == 1)
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
-                        else
-                            model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
-                    }
+                    //model.TagResources = new List<TagResource>();
+                    //foreach (var item in tagsWithOccurances)
+                    //{
+                    //    if (item.Item2 == 1)
+                    //        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
+                    //    else
+                    //        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
+                    //}
                 }
             }
-                //suggest from content
+                //ELSE suggest from content
                 var contentTags = StripHtml(model);
                 if (contentTags != null && contentTags.Any())
                 {
@@ -217,24 +217,30 @@ namespace Userspace.Web.Controllers
 
                     var sorted = grouped.OrderByDescending(x => x.Item2).ThenBy(X => X.Item1).ToList();
 
-                    foreach (var item in sorted)
+                foreach (var item in sorted)
                     {
                         //item.LinkId = model.ID;
-                        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
-                    }
-                
+                       // model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
+                        model.TagResources.Add(new SelectListItem() { Text = item.Item1, Value = item.Item1 }); //name - both times?
+
+
+                }
+                model.TagResources.Insert(0, new SelectListItem { Text = "Suggested tags", Value = "0" });
+                model.TagResources.Insert(model.TagResources.Count, new SelectListItem { Text = "Others", Value = "Others" });
+                model.SelectedValue = "0";
+
             }
-            model.TagResources.Add(new TagResource());
+           // model.TagResources.Add(new TagResource());
 
-            return PartialView("TagRow", model);
+             return PartialView("TagRow", model);
         }
-        public async Task<ActionResult> AddTag([Bind("Name, TagResources")] LinkResource model)
+        public async Task<ActionResult> AddTag([Bind("Name, SelectedValue, TagResources")] LinkResource model)
         {
-            model.TagResources.Add(new TagResource());
+         //   model.TagResources.Add(new TagResource());
 
             return PartialView("TagRow", model);
         }
-        public async Task<ActionResult> ClearTags([Bind("Name, TagResources")] LinkResource model)
+        public async Task<ActionResult> ClearTags([Bind("Name,SelectedValue, TagResources")] LinkResource model)
         {
             if (model.TagResources != null)
                 model.TagResources.Clear();

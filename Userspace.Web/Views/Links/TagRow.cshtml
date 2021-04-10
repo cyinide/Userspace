@@ -1,2 +1,30 @@
 ﻿@model Userspace.Web.Resources.LinkResource
-@Html.EditorFor(Model=>Model.TagResources)
+@*@Html.EditorFor(Model=>Model.DropdownResource.TagResources)*@
+
+@*@foreach (var item in Model.DropdownResource.TagResources)
+    {
+        <div>@item.Value</div>
+    }*@
+
+@Html.DropDownListFor(model => model.SelectedValue, Model.TagResources, new { id = "ddtags" })
+
+<script type="text/javascript">
+        //$(document).ready(function () {
+        //    $("#ddtags").change(function () {
+        //        var item = $(this).find("option:selected");
+        //        var value = item.val(); //get the selected option value
+        //        var text = item.html(); //get the selected option text
+        //        if (text == "Others") {
+        //            $("#div_content").css("display", "block"); //display the add new dialog
+        //        }
+        //    });
+        //    $("#btnAddNewItem").click(function () {
+        //        var newitem = $("#txtNewOption").val(); //get the new value
+        //        //alert(newitem);
+        //        var newOption = "<option value='" + newitem + "'>" + newitem + "</option>";
+        //        $(newOption).insertBefore($("#ddlCity option:last")); //add new option
+        //        $("#ddlCity").val(newitem);
+        //        return false;
+        //    });
+        //});
+</script>

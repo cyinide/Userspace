@@ -30,7 +30,8 @@
                 <input type="button" id="hidetags" value="Clear tags" onclick="HideTags()" class="btn btn-primary" />
             </div>
             <div id="tagItemsContainer" style="display:none">
-                @Html.EditorFor(Model => Model.TagResources)
+                @*@Html.EditorFor(Model => Model.TagResources)*@
+                @*@Html.DropDownListFor(model => model.DropdownResource.SelectedValue, Model.DropdownResource.TagResources, "Please select", new { id = "ddlCity" })*@
             </div>
             <label id="loader" class="text-danger" style="display:none">Data is loading..</label>
             <div class="row" id="addtagbutton" style="display:none">
