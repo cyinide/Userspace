@@ -9,6 +9,7 @@ using Userspace.Api.Resources;
 using Userspace.Api.Validators;
 using Userspace.Core.Models;
 using Userspace.Core.Services;
+using static Userspace.Api.Settings;
 
 namespace Userspace.Api.Controllers
 {
@@ -74,7 +75,7 @@ namespace Userspace.Api.Controllers
         [HttpGet("gettagsbyOccurancesAndLinkid/{linkId}")]
         public async Task<ActionResult<List<Tuple<string, int>>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
         {
-            var tags = await _tagService.GetTagsByOccurancesAndLinkId(linkId);
+            var tags = await _tagService.GetTagsByOccurancesAndLinkId(linkId, userId);
             if (tags == null)
                 return NotFound();
 

@@ -71,10 +71,10 @@ namespace Userspace.Api.Controllers
         [HttpPost("")]
         public async Task<ActionResult<SaveLinkResource>> CreateLink([FromBody] SaveLinkResource saveLinkResource)
         {
-            ClaimsPrincipal currentUser = this.User;
-            if (!currentUser.Claims.Any())
-                return Unauthorized(); 
-            userId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //ClaimsPrincipal currentUser = this.User;
+            //if (!currentUser.Claims.Any())
+            //    return Unauthorized(); 
+            //userId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             var validator = new SaveLinkResourceValidator();
             var validationResult = await validator.ValidateAsync(saveLinkResource);

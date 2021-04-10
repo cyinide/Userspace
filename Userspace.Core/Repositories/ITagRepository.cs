@@ -10,6 +10,6 @@ namespace Userspace.Core.Repositories
     {
         Task<IEnumerable<Tag>> GetTagsAsync();
         Task<IEnumerable<Tag>> GetTagsByLinkIdAsync(int id);
-        Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId);
+        Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId, string userId);
     }
 }

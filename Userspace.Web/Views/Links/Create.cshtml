@@ -36,7 +36,7 @@
             <label id="loader" class="text-danger" style="display:none">Data is loading..</label>
             <div class="row" id="addtagbutton" style="display:none">
                 <div class="col-md-4">
-                    <input class="btn btn-info" type="button" id="btnAdd" value="Add another tag" />
+                    @*<input class="btn btn-info" type="button" id="btnAdd" value="Add another tag" />*@
                 </div>
             </div>
         </form>
@@ -76,7 +76,6 @@
         }
 
         function ShowTags() {
-            if (callOne) {
                 document.getElementById('loader').style.display = 'block';
                 $.ajax({
                     async: true,
@@ -88,20 +87,7 @@
                         document.getElementById('loader').style.display = 'none';
                     }
                 });
-                callOne = false;
-            }
-            else {
-                $.ajax({
-                    async: true,
-                    data: $('#createform').serialize(),
-                    type: "POST",
-                    url: '/Links/AddTag',
-                    success: function (partialView) {
-                        this.url = '/Links/AddTag';
-                        $('#tagItemsContainer').html(partialView);
-                    }
-                });
-            }
+            
 
             if (document.getElementById('linkUrl').value === "") {
                 document.getElementById('valmsg').style.display = 'block';

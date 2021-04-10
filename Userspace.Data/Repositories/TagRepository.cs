@@ -32,12 +32,13 @@ namespace Userspace.Data.Repositories
                 //.Where(x => x.LinkId == linkId)
                 .ToListAsync();
         }
-        public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
+        public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId, string userId)
         {
-            var x = await UserspaceDbContext.Tags
-                //.Include(x => x.Link)
-                //.Where(x => x.LinkId == linkId)
-                .GroupBy(x=>x.Name)
+            var x = await UserspaceDbContext.UserLinks
+                .Include(x => x.Tag)
+                .Where(x=>x.LinkId == linkId)
+                .Where(x => x.UserId.ToString() != userId)
+                .GroupBy(x=>x.Tag.Name)
                 .OrderBy(group=>group.Key)
                 .Select(group=>Tuple.Create(group.Key,group.Count()))
                 .ToListAsync();

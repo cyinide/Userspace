@@ -22,7 +22,7 @@ namespace Userspace.Web.Resources
         //public ICollection<TagResource> TagResources { get; set; }
         // public DropdownViewModel DropdownResource { get; set; }
 
-        public string SelectedValue { get; set; }
+        public string SelectedTag { get; set; }
         public List<SelectListItem> TagResources { get; set; }
     }
 }
