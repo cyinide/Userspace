@@ -64,7 +64,7 @@ namespace Userspace.Api.Controllers
         [HttpGet("bylinkid/{linkId}")]
         public async Task<ActionResult<IEnumerable<LinkResource>>> GetTagsByLinkId(int linkId)
         {
-            var tags = await _tagService.GetTagsByLinkId(linkId);
+            var tags = await _tagService.GetTagsByLinkId(linkId, userId);
             if (tags == null)
                 return NotFound();
             var tagResources = _mapper.Map<IEnumerable<Tag>, IEnumerable<TagResource>>(tags);
@@ -80,6 +80,17 @@ namespace Userspace.Api.Controllers
                 return NotFound();
 
             return Ok(tags);
+        }
+        // GET: api/links/name
+        [HttpGet("checkforoccurance/{url}/{tagname}")]
+        public async Task<ActionResult<TagResource>> CheckForTagOccuranceAsync(string url, string tagname)
+        {
+            var tag = await _tagService.CheckForTagOccurance(url, tagname, userId);
+            if (tag == null)
+                return NotFound();
+            var tagResource = _mapper.Map<Tag, TagResource>(tag);
+
+            return Ok(tagResource);
         }
     }
 }

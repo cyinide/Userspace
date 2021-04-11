@@ -101,6 +101,10 @@ namespace Userspace.Web.Controllers
                         ViewBag.ErrorMessage = errorMsg;
                         return View(model);
                     }
+
+                    //check for tag occurance
+                   // var selectedTagExists = await _tagService.CheckTagForOccuranceAsync(model.Name, model.SelectedTag);
+
                     var createdLink = await _linkService.CreateLink(model);
                     if (createdLink == null)
                     {
@@ -144,7 +148,6 @@ namespace Userspace.Web.Controllers
                 {
                     output += node.InnerText;
                 }
-
                 var result = output.RemoveStopWords("en");
                 result = result.RemoveSpecialCharacters();
                 string[] splitkeywords = Regex.Split(result, "(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(?<=\\W)(?=\\W)");
@@ -185,17 +188,30 @@ namespace Userspace.Web.Controllers
             model.NewTagResources.Clear();
             model.TagResources.Clear();
             //suggest tags from other users
-            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name); //check if user adds same link twice firstly
             if (linkOccurance != null)
             {
                 var tagsWithOccurances = await _tagService.GetTagsByOccurancesAndLinkIdAsync(linkOccurance.ID);
+                var usertags = await _tagService.GetTagsByLinkId(linkOccurance.ID);
                 if (tagsWithOccurances != null && tagsWithOccurances.Any())
                 {
                     //model.TagResources = new List<TagResource>();
                     foreach (var item in tagsWithOccurances)
                     {
-                        model.TagResources.Add(new SelectListItem() { Disabled=true, Text = item.Item2, Value = item.Item1.ToString()});
+                        bool exists = false;
+                       // model.TagResources.Add(new SelectListItem() { Disabled=true, Text = item.Item2, Value = item.Item1.ToString()});
 
+                        foreach (var ex in usertags)
+                        {
+                            if(item.Item1 == ex.ID)
+                            {
+                                model.TagResources.Add(new SelectListItem() { Disabled = true, Text = item.Item2, Value = item.Item1.ToString() }); 
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if(!exists)
+                            model.TagResources.Add(new SelectListItem() {Text = item.Item2, Value = item.Item1.ToString() });
                         //if (item.Item2 == 1)
                         //    model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
                         //else

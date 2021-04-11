@@ -31,15 +31,20 @@ namespace Userspace.Services.Services
             await _unitOfWork.CommitAsync();
             return newTag;
         }
-        public async Task<IEnumerable<Tag>> GetTagsByLinkId(int id)
+        public async Task<IEnumerable<Tag>> GetTagsByLinkId(int id, string userId)
         {
             return await _unitOfWork.Tags
-                .GetTagsByLinkIdAsync(id);
+                .GetTagsByLinkIdAsync(id, userId);
         }
         public async Task<List<Tuple<int, string, int>>> GetTagsByOccurancesAndLinkId(int linkId, string userId)
         {
             return await _unitOfWork.Tags
                 .GetTagsByOccurancesAndLinkIdAsync(linkId, userId);
+        }
+        public async Task<Tag> CheckForTagOccurance(string url, string tagname, string userId)
+        {
+            return await _unitOfWork.Tags
+              .CheckForTagOccuranceAsync(url, tagname, userId);
         }
     }
 }

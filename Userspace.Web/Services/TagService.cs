@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,23 @@ namespace Userspace.Web.Services
             catch (Exception)
             {
                 throw new Exception();
+            }
+        }
+        [HttpGet]
+        public async Task<TagResource> CheckTagForOccuranceAsync(string url, string tagname)
+        {
+            try
+            {
+                var querystring = System.Web.HttpUtility.UrlEncode(url);
+                var response = await _httpClient.GetAsync(tagsUrl + "/checkforoccurance/" + url + "/" + tagname);
+                string apiResponse = await response.Content.ReadAsStringAsync();
+                var tag = JsonConvert.DeserializeObject<TagResource>(apiResponse);
+
+                return tag;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

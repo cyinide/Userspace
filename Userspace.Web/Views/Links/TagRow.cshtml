@@ -10,7 +10,8 @@
 
     <div id="div_content" style="display:none;margin-top:5px;">
         <input id="txtNewOption" style="width:150px;float:left;" class="form-control" type="text" />
-        <input id="btnAddNewItem" class="btn btn-info" style="float:right;margin-left:5px;" type="button" value="Add" />
+        <input id="btnAddNewItem" class="btn btn-info" style="float:right;margin-left:5px;" type="button" value="Select" />
+        <span id="newtagmsg" style="display:none" class="text-danger">Value already exists.</span>
 
         @foreach (var item in Model.NewTagResources)
         {
@@ -30,9 +31,21 @@
         });
         $("#btnAddNewItem").click(function () {
             var newitem = $("#txtNewOption").val();
-            var newOption = "<option value='" + newitem + "'>" + newitem + "</option>";
-            $(newOption).insertBefore($("#ddtags option:last"));
-            $("#ddtags").val(newitem);
+
+
+            var exists = $("#ddtags option")
+                .filter(function (i, o) { return o.text.toLowerCase() === newitem.toLowerCase(); })
+                .length > 0;
+
+            if (!exists) {
+                var newOption = "<option value='" + newitem + "'>" + newitem + "</option>";
+                $(newOption).insertBefore($("#ddtags option:last"));
+                $("#ddtags").val(newitem);
+                document.getElementById('newtagmsg').style.display = 'none';
+            }
+            else {
+                document.getElementById('newtagmsg').style.display = 'block';
+            }
             return false;
         });
     });
