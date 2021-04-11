@@ -12,6 +12,6 @@ namespace Userspace.Core.Services
         Task<Tag> GetTagById(int id);
         Task<Tag> CreateTag(Tag newTag);
         Task<IEnumerable<Tag>> GetTagsByLinkId(int id);
-        Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkId(int linkId, string userId);
+        Task<List<Tuple<int, string, int>>> GetTagsByOccurancesAndLinkId(int linkId, string userId);
     }
 }

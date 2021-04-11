@@ -79,13 +79,13 @@ namespace Userspace.Web.Services
                 throw new Exception(ex.Message);
             }
         }
-      public async Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
+      public async Task<List<Tuple<int, string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId)
         {
             try
             {
                 var response = await _httpClient.GetAsync(tagsUrl + "/gettagsbyOccurancesAndLinkid/" + linkId);
                 string apiResponse = await response.Content.ReadAsStringAsync();
-                var tags = JsonConvert.DeserializeObject<List<Tuple<string, int>>>(apiResponse);
+                var tags = JsonConvert.DeserializeObject<List<Tuple<int, string, int>>>(apiResponse);
 
                 return tags;
             }

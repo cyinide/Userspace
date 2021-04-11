@@ -14,6 +14,7 @@ namespace Userspace.Web.Resources
         {
             //TagResources = new List<TagResource>();
             TagResources = new List<SelectListItem>();
+            NewTagResources = new List<SelectListItem>();
         }
         public int ID { get; set; }
         [Required]
@@ -24,6 +25,7 @@ namespace Userspace.Web.Resources
 
         public string SelectedTag { get; set; }
         public List<SelectListItem> TagResources { get; set; }
+        public List<SelectListItem> NewTagResources { get; set; }
     }
 }
 

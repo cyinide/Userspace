@@ -96,7 +96,7 @@ namespace Userspace.Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (String.IsNullOrEmpty(model.SelectedTag) || model.SelectedTag == "Add other")
+                    if (String.IsNullOrEmpty(model.SelectedTag) || model.SelectedTag == "Add other" || model.SelectedTag == "Select tag category")
                     {
                         ViewBag.ErrorMessage = errorMsg;
                         return View(model);
@@ -150,7 +150,10 @@ namespace Userspace.Web.Controllers
                 string[] splitkeywords = Regex.Split(result, "(?<=[a-z])(?=[A-Z])|(?<=[0-9])(?=[A-Za-z])|(?<=[A-Za-z])(?=[0-9])|(?<=\\W)(?=\\W)");
                 splitkeywords = (from x in splitkeywords select x.Trim()).ToArray();
 
-                var groupedkeywords = splitkeywords.GroupBy(split => split)
+                var longwords = String.Join(" ", splitkeywords.Where(x => x.Length > 3).ToArray());
+                var splitlongwords = longwords.Split(" ");
+
+                var groupedkeywords = splitlongwords.GroupBy(split => split)
                     .Select(g => new { Keyword = g.Key, Count = g.Count() });
 
                 var sortedkeywords = groupedkeywords.OrderByDescending(x => x.Count).ThenBy(X => X.Keyword).ToList();
@@ -179,7 +182,9 @@ namespace Userspace.Web.Controllers
         }
         public async Task<ActionResult> InitializeTags([Bind("Name, SelectedTag, TagResources")] LinkResource model)
         {
-            //if exists
+            model.NewTagResources.Clear();
+            model.TagResources.Clear();
+            //suggest tags from other users
             var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name);
             if (linkOccurance != null)
             {
@@ -187,38 +192,42 @@ namespace Userspace.Web.Controllers
                 if (tagsWithOccurances != null && tagsWithOccurances.Any())
                 {
                     //model.TagResources = new List<TagResource>();
-                    //foreach (var item in tagsWithOccurances)
-                    //{
-                    //    if (item.Item2 == 1)
-                    //        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
-                    //    else
-                    //        model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
-                    //}
+                    foreach (var item in tagsWithOccurances)
+                    {
+                        model.TagResources.Add(new SelectListItem() { Disabled=true, Text = item.Item2, Value = item.Item1.ToString()});
+
+                        //if (item.Item2 == 1)
+                        //    model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
+                        //else
+                        //    model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
+                    }
                 }
             }
-            //ELSE suggest from content
+            model.TagResources.Insert(0, new SelectListItem { Text = "Select tag category", Value = "0" });
+            model.TagResources.Insert(model.TagResources.Count, new SelectListItem { Text = "Add other", Value = "Add other" });
+            model.SelectedTag = "0";
+
+            // suggest for new tags from content
             var contentTags = StripHtml(model);
             if (contentTags != null && contentTags.Any())
             {
-                var grouped = contentTags.GroupBy(x => x.Name)//DRY
+                var grouped = contentTags.GroupBy(x => x.Name)
                 .OrderBy(group => group.Key)
                 .Select(group => Tuple.Create(group.Key, group.Count()))
                 .ToList();
 
                 var sorted = grouped.OrderByDescending(x => x.Item2).ThenBy(X => X.Item1).ToList();
 
+                int i = 0;
                 foreach (var item in sorted)
                 {
+                    i++;
                     //item.LinkId = model.ID;
                     // model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured " + item.Item2 + " times.", LinkId = model.ID });
-                    model.TagResources.Add(new SelectListItem() { Text = item.Item1, Value = item.Item1 }); //name - both times?
+                    model.NewTagResources.Add(new SelectListItem() { Text = item.Item1, Value = i + ". " }); //name - both times?
                 }
 
             }
-            model.TagResources.Insert(0, new SelectListItem { Text = "Select tag category", Value = "0" });
-            model.TagResources.Insert(model.TagResources.Count, new SelectListItem { Text = "Add other", Value = "Add other" });
-            model.SelectedTag = "0";
-
 
             // model.TagResources.Add(new TagResource());
 

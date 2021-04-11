@@ -13,6 +13,6 @@ namespace Userspace.Web.Interfaces
         Task<TagViewModel> GetTagById(int id);
         Task<TagResource> CreateTag(TagResource tag);
         Task<IEnumerable<TagResource>> GetTagsByLinkId(int linkId);
-        Task<List<Tuple<string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId);
+        Task<List<Tuple<int, string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId);
     }
 }
