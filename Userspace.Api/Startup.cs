@@ -41,7 +41,7 @@ namespace Userspace.Api
             services.AddControllers();
 
             services.AddDbContext<UserspaceDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("Local"),
+            options.UseSqlServer(Configuration.GetConnectionString("Default"),
             x => x.MigrationsAssembly("Userspace.Data")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
             services.AddCustomCors("AllowAllOrigins");
