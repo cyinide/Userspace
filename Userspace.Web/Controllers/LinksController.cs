@@ -205,7 +205,7 @@ namespace Userspace.Web.Controllers
                         {
                             if(item.Item1 == ex.ID)
                             {
-                                model.TagResources.Add(new SelectListItem() { Disabled = true, Text = item.Item2, Value = item.Item1.ToString() }); 
+                                model.TagResources.Add(new SelectListItem() { Disabled = true, Text = item.Item2, Value = item.Item2 }); 
                                 exists = true;
                                 break;
                             }
