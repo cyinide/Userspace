@@ -55,6 +55,7 @@ namespace Userspace.Data.Repositories
                 mySet1.ExceptWith(mySet2);
                 if (!mySet1.Any())
                 {
+                    if(System.Web.HttpUtility.UrlDecode(name).StartsWith("http://"))
                     link.Name = link.Name.Insert(0, "http://");
                     return link;
                 }

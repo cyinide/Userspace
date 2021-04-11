@@ -98,15 +98,15 @@ namespace Userspace.Web.Controllers
                 {
                     if (String.IsNullOrEmpty(model.SelectedTag) || model.SelectedTag == "Add other" || model.SelectedTag == "Select tag category")
                     {
-                        ViewBag.ErrorMessage = errorMsg;
+                        ViewBag.ErrorMessage = errorMsgGen;
                         return View(model);
                     }
 
                     //check for tag occurance
                    // var selectedTagExists = await _tagService.CheckTagForOccuranceAsync(model.Name, model.SelectedTag);
 
-                    var createdLink = await _linkService.CreateLink(model);
-                    if (createdLink == null)
+                    var response = await _linkService.CreateLink(model);
+                    if (!response)
                     {
                         ViewBag.ErrorMessage = errorMsg;
                         return View(model);
@@ -211,7 +211,7 @@ namespace Userspace.Web.Controllers
                             }
                         }
                         if(!exists)
-                            model.TagResources.Add(new SelectListItem() {Text = item.Item2, Value = item.Item1.ToString() });
+                            model.TagResources.Add(new SelectListItem() {Text = item.Item2, Value = item.Item2 });
                         //if (item.Item2 == 1)
                         //    model.TagResources.Add(new TagResource { Name = item.Item1, NumberOfOccurances = "Occured once.", LinkId = model.ID });
                         //else

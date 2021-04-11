@@ -15,10 +15,10 @@ namespace Userspace.Services.Services
         {
             this._unitOfWork = unitOfWork;
         }    
-        public async Task<IEnumerable<Tag>> GetAll()
+        public async Task<IEnumerable<Tag>> GetAllTagsAsync(string userId)
         {
             return await _unitOfWork.Tags
-                .GetAllAsync();
+                .GetAllTagsAsync(userId);
         }
         public async Task<Tag> GetTagById(int id)
         {
@@ -41,10 +41,10 @@ namespace Userspace.Services.Services
             return await _unitOfWork.Tags
                 .GetTagsByOccurancesAndLinkIdAsync(linkId, userId);
         }
-        public async Task<Tag> CheckForTagOccurance(string url, string tagname, string userId)
+        public async Task<Tag> CheckForTagOccuranceAsync(string name)
         {
             return await _unitOfWork.Tags
-              .CheckForTagOccuranceAsync(url, tagname, userId);
+              .CheckForTagOccuranceAsync(name);
         }
     }
 }

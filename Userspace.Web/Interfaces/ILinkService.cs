@@ -11,7 +11,7 @@ namespace Userspace.Web.Interfaces
     {
          Task<IEnumerable<LinkViewModel>> GetLinks(string userId);
          Task<LinkViewModel> GetLinkById(int id);
-         Task<LinkResource> CreateLink(LinkResource link);
+         Task<bool> CreateLink(LinkResource link);
          Task<LinkResource> CheckLinkForOccurance(string name);
     }
 }

@@ -66,7 +66,7 @@ namespace Userspace.Web.Services
             }
         }
         [HttpPost]
-        public async Task<LinkResource> CreateLink(LinkResource link)
+        public async Task<bool> CreateLink(LinkResource link)
         {
             try
             {
@@ -76,21 +76,24 @@ namespace Userspace.Web.Services
 
                 var response = await _httpClient.PostAsync(linksUrl, stringContent);
 
-                if (response.StatusCode == HttpStatusCode.Conflict)
-                {
-                    var errmsg = JsonConvert.DeserializeObject<dynamic>(response.Content.ReadAsStringAsync().Result);
-                    var id = Regex.Match(Convert.ToString(errmsg), @"'([^']*)").Groups[1].Value;
-                    return new LinkResource { ID = Convert.ToInt32(id), Name = link.Name };
-                }
+                //if (response.StatusCode == HttpStatusCode.Conflict)
+                //{
+                //    var errmsg = JsonConvert.DeserializeObject<dynamic>(response.Content.ReadAsStringAsync().Result);
+                //    var id = Regex.Match(Convert.ToString(errmsg), @"'([^']*)").Groups[1].Value;
+                //    return new LinkResource { ID = Convert.ToInt32(id), Name = link.Name };
+                //}
 
-                string apiResponse = await response.Content.ReadAsStringAsync();
-                var createdLink = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
+                //string apiResponse = await response.Content.ReadAsStringAsync();
+                //var createdLink = JsonConvert.DeserializeObject<LinkResource>(apiResponse);
 
-                return createdLink;
+                //return createdLink;
+
+                return response.IsSuccessStatusCode;
+
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
         }
         public Task<LinkViewModel> GetLinkById(int id)

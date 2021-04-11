@@ -8,9 +8,9 @@ namespace Userspace.Core.Repositories
 {
     public interface ITagRepository : IRepository<Tag>
     {
-        Task<IEnumerable<Tag>> GetTagsAsync();
+        Task<IEnumerable<Tag>> GetAllTagsAsync(string userId);
         Task<IEnumerable<Tag>> GetTagsByLinkIdAsync(int id, string userId);
         Task<List<Tuple<int, string, int>>> GetTagsByOccurancesAndLinkIdAsync(int linkId, string userId);
-        Task<Tag> CheckForTagOccuranceAsync(string url,string tagname, string userId);
+        Task<Tag> CheckForTagOccuranceAsync(string name);
     }
 }

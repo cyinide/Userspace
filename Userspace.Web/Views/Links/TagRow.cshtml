@@ -32,7 +32,6 @@
         $("#btnAddNewItem").click(function () {
             var newitem = $("#txtNewOption").val();
 
-
             var exists = $("#ddtags option")
                 .filter(function (i, o) { return o.text.toLowerCase() === newitem.toLowerCase(); })
                 .length > 0;

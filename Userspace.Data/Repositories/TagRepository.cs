@@ -14,9 +14,12 @@ namespace Userspace.Data.Repositories
         public TagRepository(UserspaceDbContext context)
             : base(context)
         { }
-        public async Task<IEnumerable<Tag>> GetTagsAsync()
+        public async Task<IEnumerable<Tag>> GetAllTagsAsync(string userId)
         {
-            return await UserspaceDbContext.Tags
+            return await UserspaceDbContext.UserLinks
+                .Include(x => x.Tag)
+                .Where(x => x.UserId.ToString() == userId)
+                .Select(x => x.Tag)
                 .ToListAsync();
         }
         public async Task<Tag> GetTagByIdAsync(int id)
@@ -48,15 +51,10 @@ namespace Userspace.Data.Repositories
             return sort;
         }
 
-        public async Task<Tag> CheckForTagOccuranceAsync(string url, string tagname, string userId)
+        public async Task<Tag> CheckForTagOccuranceAsync(string name)
         {
-            return await UserspaceDbContext.UserLinks
-                .Include(x => x.Link)
-                .Include(x => x.Tag)
-                .Where(x => x.Link.Name == url)
-                .Where(x => x.UserId.ToString() == userId)
-                .Where(x => x.Tag.Name == tagname)
-                .Select(x=>x.Tag)
+            return await UserspaceDbContext.Tags
+                .Where(x => x.Name == name)              
                 .FirstOrDefaultAsync();
 
         }

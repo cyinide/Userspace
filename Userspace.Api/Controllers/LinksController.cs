@@ -58,7 +58,7 @@ namespace Userspace.Api.Controllers
 
             return Ok(linkResource);
         }
-        // GET: api/links/name
+        // GET: api/links/checkforoccurance/name
         [HttpGet("checkforoccurance/{name}")]
         public async Task<ActionResult<LinkResource>> CheckForLinkOccuranceAsync(string name)
         {
@@ -82,23 +82,31 @@ namespace Userspace.Api.Controllers
                 return BadRequest(validationResult.Errors);
 
             var linkToCreate = _mapper.Map<SaveLinkResource, Link>(saveLinkResource);
+            var tagToCreate = _mapper.Map<SaveLinkResource, Tag>(saveLinkResource);
 
-            var existingLink = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
-            if (existingLink != null)
-            {
-                await _userLinkService.CreateUserLink(new UserLink { LinkId = existingLink.ID, UserId = Guid.Parse(userId)});
+            var link = await _linkService.CheckForLinkOccuranceAsync(linkToCreate.Name);
+            if(link == null)
+                link = await _linkService.CreateLink(linkToCreate);
+
+            var tag = await _tagService.CheckForTagOccuranceAsync(tagToCreate.Name);
+            if (tag == null)
+                tag = await _tagService.CreateTag(tagToCreate);
+
+            //if (existingLink != null)
+            //{
+                await _userLinkService.CreateUserLink(new UserLink { LinkId = link.ID, TagId = tag.ID, UserId = Guid.Parse(userId)});
                 //foreach (var item in linkToCreate.Tags)
                 //{
                 //    await _tagService.CreateTag(new Tag { LinkId = existingLink.ID, Name = item.Name }); // TODO: CreateTagRange
                 //}
-                return Conflict(new { message = $"An existing record with the id '{existingLink.ID}' was already found." });
-            }
-            var newLink = await _linkService.CreateLink(linkToCreate);
-            await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(userId) });
-            var link = await _linkService.GetLinkById(newLink.ID);
-            var linkResource = _mapper.Map<Link, LinkResource>(newLink);
+              //  return Conflict(new { message = $"An existing record with the id '{saveLinkResource.ID}' was already found." });
+            //}
+            //var newLink = await _linkService.CreateLink(linkToCreate);
+           // await _userLinkService.CreateUserLink(new UserLink { LinkId = newLink.ID, UserId = Guid.Parse(userId) });
+           // var link = await _linkService.GetLinkById(newLink.ID);
+           // var linkResource = _mapper.Map<Link, LinkResource>(newLink);
 
-            return CreatedAtRoute(nameof(GetLinkById), new { Id = newLink.ID }, linkResource);
+            return Ok();
         }
         // GET: api/links/withtags
         [HttpGet("withtags")]
