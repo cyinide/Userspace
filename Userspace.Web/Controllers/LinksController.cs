@@ -103,8 +103,8 @@ namespace Userspace.Web.Controllers
                     }
 
                     //check for tag occurance
-                   // var selectedTagExists = await _tagService.CheckTagForOccuranceAsync(model.Name, model.SelectedTag);
-
+                    // var selectedTagExists = await _tagService.CheckTagForOccuranceAsync(model.Name, model.SelectedTag);
+                    model.Name = model.Name.ToLower();
                     var response = await _linkService.CreateLink(model);
                     if (!response)
                     {
@@ -188,7 +188,7 @@ namespace Userspace.Web.Controllers
             model.NewTagResources.Clear();
             model.TagResources.Clear();
             //suggest tags from other users
-            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name); //check if user adds same link twice firstly
+            var linkOccurance = await _linkService.CheckLinkForOccurance(model.Name.ToLower()); //check if user adds same link twice firstly
             if (linkOccurance != null)
             {
                 var tagsWithOccurances = await _tagService.GetTagsByOccurancesAndLinkIdAsync(linkOccurance.ID);
